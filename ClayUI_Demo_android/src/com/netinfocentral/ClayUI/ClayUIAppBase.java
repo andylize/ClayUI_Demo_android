@@ -75,7 +75,7 @@ public class ClayUIAppBase {
 
 	while (iterator.hasNext()) {
 	    AppPart appPart = (AppPart)iterator.next();
-	    Log.e("listAppParts", appPart.getAppPartName() + " " + appPart.getVersion());
+	    Log.i("listAppParts", appPart.getAppPartName() + " " + appPart.getVersion());
 	}
     }
 }
