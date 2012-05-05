@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World, ClayUI_Demo_androidActivity!</string>
     <string name="app_name">ClayUI_Demo_android</string>
+    <string name="syncButton">Sync UI</string>
 
 </resources>

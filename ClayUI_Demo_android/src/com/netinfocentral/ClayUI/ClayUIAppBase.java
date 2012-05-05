@@ -18,7 +18,9 @@ public class ClayUIAppBase {
     String baseUri = "";
 
     // define local data sources
+    private ClayUIDatabaseHelper dbHelper;
     private AppPartDataAdapter appPartDataAdapter;
+    private AppPartUtils appPartUtils;
 
     // define local web service helpers
     private AppPartWebServiceHelper appPartWebServiceHelper;
@@ -28,20 +30,27 @@ public class ClayUIAppBase {
 	this.applicationID = applicationID;
 	this.context = context;
 	this.baseUri = baseUri;
-
+	
+	// create database if necessary
+	dbHelper = new ClayUIDatabaseHelper(this.context);
+	
 	// instantiate data sources
 	appPartDataAdapter = new AppPartDataAdapter(this.context);
+	
+	// instantiate data utils
+	appPartUtils = new AppPartUtils(this.applicationID, this.context, this.baseUri);
 
 	// open connections
 	appPartDataAdapter.open();
 
 	// load appPart data
 	this.loadAppPartDataSchema();
+	appPartDataAdapter.close();
     }
 
     // method to sync ClayUI structure
     public void syncLayoutStructure() {
-
+	appPartUtils.sync();
     }
 
     // method to get app part structures from web service
@@ -55,27 +64,7 @@ public class ClayUIAppBase {
 
 	while (iterator.hasNext()) {
 	    AppPart appPart = (AppPart)iterator.next();
-	    this.appPartDataAdapter.createAppPart(appPart.getAppPartName(), appPart.getVersion());
-	}
-    }
-
-    // method to create test data
-    public void createTestData() {
-
-	Date dt = new Date();
-
-	appPartDataAdapter.createAppPart("TestAppPart_" + dt.getTime(), 1);
-
-    }
-
-    public void listAppParts() {
-	List<AppPart> appParts = appPartDataAdapter.getAllAppParts();
-
-	Iterator<AppPart> iterator = appParts.iterator();
-
-	while (iterator.hasNext()) {
-	    AppPart appPart = (AppPart)iterator.next();
-	    Log.i("listAppParts", appPart.getAppPartName() + " " + appPart.getVersion());
+	    this.appPartDataAdapter.createAppPart(appPart.getRecordID(), appPart.getAppPartName(), appPart.getVersion());
 	}
     }
 }
