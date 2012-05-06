@@ -146,7 +146,7 @@ public class AppPartDataAdapter {
 	values.put(AppPartDatabaseHelper.COLUMN_ID, appPartID);
 	values.put(AppPartDatabaseHelper.COLUMN_APP_PART_NAME, appPartName);
 	values.put(AppPartDatabaseHelper.COLUMN_VERSION, version);
-	db.insert(AppPartDatabaseHelper.TABLE_NAME, null, values);
+	db.insert(AppPartDatabaseHelper.TEMP_TABLE_NAME, null, values);
     }
     // method to delete all app parts from temp table
     private void deleteTempAppParts() {
@@ -157,18 +157,18 @@ public class AppPartDataAdapter {
     private void sync() {
 	// delete records in app part table which are not in the temp table
 	String sql = 
-		"DELETE a FROM " + AppPartDatabaseHelper.TABLE_NAME + " a "+
-		"LEFT OUTER JOIN " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " t ON (a." + AppPartDatabaseHelper.COLUMN_ID + " = t." + AppPartDatabaseHelper.COLUMN_ID + ") " +
-		"WHERE a." + AppPartDatabaseHelper.COLUMN_ID + " IS NULL;";
+		"DELETE FROM " + AppPartDatabaseHelper.TABLE_NAME + " "+
+		"WHERE " + AppPartDatabaseHelper.COLUMN_ID + " NOT IN (SELECT " + AppPartDatabaseHelper.COLUMN_ID + " FROM " + AppPartDatabaseHelper.TEMP_TABLE_NAME + ");";
 	db.execSQL(sql);
 	
 	// update records that exist in both tables
 	sql = "UPDATE " + AppPartDatabaseHelper.TABLE_NAME + " " +
-	      "SET _id = t._id " +
-	      ",AppPartName = t.AppPartName " +
-	      ",Version = t.Version " +
-	      "FROM " + AppPartDatabaseHelper.TABLE_NAME + " a " +
-	      "INNER JOIN " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " t ON (a." + AppPartDatabaseHelper.COLUMN_ID + " = t." + AppPartDatabaseHelper.COLUMN_ID + ");";
+	      "SET " + AppPartDatabaseHelper.COLUMN_APP_PART_NAME + " = (SELECT t." + AppPartDatabaseHelper.COLUMN_APP_PART_NAME + " FROM " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	      	"WHERE t." + AppPartDatabaseHelper.COLUMN_ID + " = " + AppPartDatabaseHelper.TABLE_NAME + "." + AppPartDatabaseHelper.COLUMN_ID + "), " + 
+	      AppPartDatabaseHelper.COLUMN_VERSION + " = (SELECT t." + AppPartDatabaseHelper.COLUMN_VERSION + " FROM " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	      	"WHERE t." + AppPartDatabaseHelper.COLUMN_ID + " = " + AppPartDatabaseHelper.TABLE_NAME + "." + AppPartDatabaseHelper.COLUMN_ID + ") " +
+	      "WHERE EXISTS (SELECT t." + AppPartDatabaseHelper.COLUMN_APP_PART_NAME + " FROM " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+	      "WHERE t." + AppPartDatabaseHelper.COLUMN_ID + " = " + AppPartDatabaseHelper.TABLE_NAME + "." + AppPartDatabaseHelper.COLUMN_ID + ");";
 	db.execSQL(sql);
 	
 	// insert records that do not exist in app parts table
@@ -177,8 +177,8 @@ public class AppPartDataAdapter {
 	      AppPartDatabaseHelper.COLUMN_ID + ", " +
 	      AppPartDatabaseHelper.COLUMN_APP_PART_NAME + ", " +
 	      AppPartDatabaseHelper.COLUMN_VERSION + " FROM " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " t " +
-	      "LEFT OUTER JOIN " + AppPartDatabaseHelper.TABLE_NAME + " a ON (t." + AppPartDatabaseHelper.COLUMN_ID + " = a." + AppPartDatabaseHelper.COLUMN_ID + ") " +
-	      "WHERE t." + AppPartDatabaseHelper.COLUMN_ID + " IS NULL;";
+	      "WHERE t." + AppPartDatabaseHelper.COLUMN_ID + " NOT IN " + 
+	      "(SELECT " + AppPartDatabaseHelper.COLUMN_ID + " FROM " + AppPartDatabaseHelper.TABLE_NAME + ");";
 	db.execSQL(sql);
 	
 	Log.i(AppPartDataAdapter.class.getName(), "AppParts Table Successfully synced.");

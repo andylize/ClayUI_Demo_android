@@ -45,12 +45,21 @@ public class ClayUIAppBase {
 
 	// load appPart data
 	this.loadAppPartDataSchema();
-	appPartDataAdapter.close();
     }
 
     // method to sync ClayUI structure
     public void syncLayoutStructure() {
 	appPartUtils.sync();
+	appPartUtils.listAppParts();
+    }
+    
+    // method to poen database connection
+    public void openDB() {
+	this.appPartDataAdapter.open();
+    }
+    
+    public void closeDB() {
+	this.appPartDataAdapter.close();
     }
 
     // method to get app part structures from web service
@@ -66,5 +75,9 @@ public class ClayUIAppBase {
 	    AppPart appPart = (AppPart)iterator.next();
 	    this.appPartDataAdapter.createAppPart(appPart.getRecordID(), appPart.getAppPartName(), appPart.getVersion());
 	}
+    }
+    //method to return list of AppParts
+    public List<AppPart> getAllAppParts() {
+	return this.appPartDataAdapter.getAllAppParts();
     }
 }
