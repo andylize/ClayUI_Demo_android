@@ -11,11 +11,17 @@ public class ClayUIDatabaseHelper {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "ClayUI.db";
     
-    // define AppPart create string
+    // define AppPart DDL strings
     private static final String CREATE_APP_PARTS_TABLE = AppPartDatabaseHelper.TABLE_CREATE;
     private static final String CREATE_APP_PARTS_TEMP_TABLE = AppPartDatabaseHelper.TEMP_TABLE_CREATE;
     private static final String DELETE_APP_PARTS_TABLE = AppPartDatabaseHelper.TABLE_DELETE;
     private static final String DELETE_APP_PARTS_TEMP_TABLE = AppPartDatabaseHelper.TEMP_TABLE_DELETE;
+    
+    // define Element DDL strings
+    private static final String CREATE_ELEMENTS_TABLE = ElementDatabaseHelper.TABLE_CREATE;
+    private static final String CREATE_ELEMENTS_TEMP_TABLE = ElementDatabaseHelper.TEMP_TABLE_CREATE;
+    private static final String DELETE_ELEMENTS_TABLE = ElementDatabaseHelper.TABLE_DELETE;
+    private static final String DELETE_ELEMENTS_TEMP_TABLE = ElementDatabaseHelper.TEMP_TABLE_DELETE;
     
     // define class variables
     private final Context context;
@@ -48,9 +54,13 @@ public class ClayUIDatabaseHelper {
 	    // create AppParts table
 	    db.execSQL(CREATE_APP_PARTS_TABLE);
 	    Log.i(DatabaseHelper.class.getName(), "Database Created");
-	    Log.i(DatabaseHelper.class.getName(), "AppParts Table Created");
+	    Log.i(DatabaseHelper.class.getName(), "Table " + AppPartDatabaseHelper.TABLE_NAME + " created.");
 	    db.execSQL(CREATE_APP_PARTS_TEMP_TABLE);
-	    Log.i(DatabaseHelper.class.getName(), "AppParts TEMP Table Created");
+	    Log.i(DatabaseHelper.class.getName(), "Table " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " created.");
+	    db.execSQL(CREATE_ELEMENTS_TABLE);
+	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementDatabaseHelper.TABLE_NAME + " created.");
+	    db.execSQL(CREATE_ELEMENTS_TEMP_TABLE);
+	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementDatabaseHelper.TEMP_TABLE_NAME + " created.");
 	    
 	}
 
@@ -61,9 +71,13 @@ public class ClayUIDatabaseHelper {
 		    + newVersion + ", which will destroy all old data");
 
 	    db.execSQL(DELETE_APP_PARTS_TABLE);
-	    Log.i(DatabaseHelper.class.getName(), "AppParts Table Deleted");
+	    Log.i(DatabaseHelper.class.getName(), "Table " + AppPartDatabaseHelper.TABLE_NAME + " deleted.");
 	    db.execSQL(DELETE_APP_PARTS_TEMP_TABLE);
-	    Log.i(DatabaseHelper.class.getName(), "AppParts TEMP Table Deleted");
+	    Log.i(DatabaseHelper.class.getName(), "Table " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " deleted.");
+	    db.execSQL(DELETE_ELEMENTS_TABLE);
+	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementDatabaseHelper.TABLE_NAME + " deleted.");
+	    db.execSQL(DELETE_ELEMENTS_TEMP_TABLE);
+	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementDatabaseHelper.TEMP_TABLE_NAME + " deleted.");
 	    onCreate(db);	    
 	}	
     }

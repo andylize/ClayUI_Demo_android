@@ -18,7 +18,7 @@ public class AppPartDatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_APP_PART_NAME = "AppPartName";
     public static final String COLUMN_VERSION = "Version";
 
-    // command to create the tables
+    // commands to create the tables
     public static final String TABLE_CREATE =
 	    "CREATE TABLE " + TABLE_NAME + " (" +
 		    COLUMN_ID + " integer primary key, " +
@@ -30,6 +30,7 @@ public class AppPartDatabaseHelper extends SQLiteOpenHelper {
 			    COLUMN_APP_PART_NAME + " text, " +
 			    COLUMN_VERSION + " integer);";
     
+    // commands to delete the tables
     public static final String TABLE_DELETE =
 	    "DROP TABLE IF EXISTS " + TABLE_NAME + ";";
     public static final String TEMP_TABLE_DELETE =
@@ -45,13 +46,13 @@ public class AppPartDatabaseHelper extends SQLiteOpenHelper {
     // create database if it does not exist
     @Override
     public void onCreate(SQLiteDatabase db) {
-	// do nothing.  This is handled by generic db handler
+	// do nothing.  This is handled by ClayUIDatabaseHelper
     }
 
     // upgrade database if necessary
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	// do nothing.  This is handled by generic db handler
+	// do nothing.  This is handled by ClayUIDatabaseHelper
 
     }
 

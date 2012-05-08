@@ -48,7 +48,7 @@ public class AppPartDataAdapter {
     	}
     }
     
-    /** method to add a record to database
+    /** method to add an app part record to database
      **
      ** Returns the record id of the new record
      **/
@@ -124,7 +124,7 @@ public class AppPartDataAdapter {
      * 
      * 
      */
-    // method to load temp table from array
+    // method to load temp table from array from web service
     public void syncWithTempTable(List<AppPart> appParts) {
 	// clear temp table
 	this.deleteTempAppParts();
@@ -132,7 +132,7 @@ public class AppPartDataAdapter {
 	// create iterator for app parts
 	Iterator<AppPart> iterator = appParts.iterator();
 	
-	// loop through iterator and add update 
+	// loop through iterator and add app parts to temp table 
 	while (iterator.hasNext()) {
 	    AppPart appPart = (AppPart)iterator.next();
 	    this.createTempAppPart(appPart.getRecordID(), appPart.getAppPartName(), appPart.getVersion());
