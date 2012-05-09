@@ -7,15 +7,17 @@ public class Element {
     private String elementName;
     private int elementType;
     private String elementLabel;
+    private int listOrder;
     private int version;
            
     // main constructor
-    public Element(long recordID, int appPartID, String elementName, int elementType, String elementLabel, int version) {
+    public Element(long recordID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
 	this.recordID = recordID;
 	this.appPartID = appPartID;
 	this.elementName = elementName;
 	this.elementType = elementType;
 	this.elementLabel = elementLabel;
+	this.listOrder = listOrder;
 	this.version = version;
     }
     
@@ -53,7 +55,14 @@ public class Element {
     public String getElementLabel() {
         return elementLabel;
     }
-
+    
+    /** 
+     * @return the listOrder
+     */
+    public int getListOrder() {
+	return listOrder;
+    }
+    
     /**
      * @return the version
      */
@@ -64,6 +73,6 @@ public class Element {
     @Override
     public String toString() {
 	return "AppPart [recordID="+ this.recordID + ", appPartID=" + this.appPartID + ", elementName=" + this.elementName +
-		 ", elementType=" + this.elementType + ", elementLabel=" + this.elementLabel + ", version="+ this.version + "]";
+		 ", elementType=" + this.elementType + ", elementLabel=" + this.elementLabel + ", listOrder=" + this.listOrder + ", version="+ this.version + "]";
     }
 }

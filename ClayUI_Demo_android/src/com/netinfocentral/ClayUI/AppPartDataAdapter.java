@@ -181,7 +181,7 @@ public class AppPartDataAdapter {
 	      "(SELECT " + AppPartDatabaseHelper.COLUMN_ID + " FROM " + AppPartDatabaseHelper.TABLE_NAME + ");";
 	db.execSQL(sql);
 	
-	Log.i(AppPartDataAdapter.class.getName(), "AppParts Table Successfully synced.");
+	Log.i(AppPartDataAdapter.class.getName(), "AppParts table successfully synced.");
     }
 	
 }

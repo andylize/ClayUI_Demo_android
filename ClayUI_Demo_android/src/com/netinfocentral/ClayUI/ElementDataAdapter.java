@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.sax.ElementListener;
 import android.util.Log;
 
 public class ElementDataAdapter {
@@ -20,6 +21,7 @@ public class ElementDataAdapter {
 	    ElementDatabaseHelper.COLUMN_ELEMENT_NAME,
 	    ElementDatabaseHelper.COLUMN_ELEMENT_TYPE,
 	    ElementDatabaseHelper.COLUMN_ELEMENT_LABEL,
+	    ElementDatabaseHelper.COLUMN_LIST_ORDER,
 	    ElementDatabaseHelper.COLUMN_VERSION};
     
     //default constructor
@@ -54,13 +56,14 @@ public class ElementDataAdapter {
      **
      ** Returns the record id of the new record
      **/
-    public Element createElement(long elementID, int appPartID, String elementName, int elementType, String elementLabel, int version) {
+    public Element createElement(long elementID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
 	ContentValues values = new ContentValues();
 	values.put(ElementDatabaseHelper.COLUMN_ID, elementID);
 	values.put(ElementDatabaseHelper.COLUMN_APP_PART_ID, appPartID);
 	values.put(ElementDatabaseHelper.COLUMN_ELEMENT_NAME, elementName);
 	values.put(ElementDatabaseHelper.COLUMN_ELEMENT_TYPE, elementType);
 	values.put(ElementDatabaseHelper.COLUMN_ELEMENT_LABEL, elementLabel);
+	values.put(ElementDatabaseHelper.COLUMN_LIST_ORDER, listOrder);
 	values.put(ElementDatabaseHelper.COLUMN_VERSION, version);
 	long insertID = db.insert(ElementDatabaseHelper.TABLE_NAME, null, values);
 	
@@ -76,13 +79,14 @@ public class ElementDataAdapter {
      * 
      * @return record id of the current updated record
      */
-    public Element updateElement(long elementID, int appPartID, String elementName, int elementType, String elementLabel, int version) {
+    public Element updateElement(long elementID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
 	ContentValues values = new ContentValues();
 	values.put(ElementDatabaseHelper.COLUMN_ID, elementID);
 	values.put(ElementDatabaseHelper.COLUMN_APP_PART_ID, appPartID);
 	values.put(ElementDatabaseHelper.COLUMN_ELEMENT_NAME, elementName);
 	values.put(ElementDatabaseHelper.COLUMN_ELEMENT_TYPE, elementType);
 	values.put(ElementDatabaseHelper.COLUMN_ELEMENT_LABEL, elementLabel);
+	values.put(ElementDatabaseHelper.COLUMN_LIST_ORDER, listOrder);
 	values.put(ElementDatabaseHelper.COLUMN_VERSION, version);
 	long updateID = db.update(ElementDatabaseHelper.TABLE_NAME, values, ElementDatabaseHelper.COLUMN_ID + " = " + elementID, null);
 	
@@ -120,7 +124,7 @@ public class ElementDataAdapter {
     // method to convert a record to a AppPart object
     private Element cursorToElement(Cursor cursor)
     {
-	Element element = new Element(cursor.getLong(0), cursor.getInt(1), cursor.getString(2), cursor.getInt(3), cursor.getString(4), cursor.getInt(5));
+	Element element = new Element(cursor.getLong(0), cursor.getInt(1), cursor.getString(2), cursor.getInt(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6));
 	return element;
     }
     
@@ -138,18 +142,19 @@ public class ElementDataAdapter {
 	// loop through iterator and add elements to temp table
 	while (iterator.hasNext()) {
 	    Element element = (Element)iterator.next();
-	    this.createTempElement(element.getRecordID(), element.getAppPartID(), element.getElementName(), element.getElementType(), element.getElementLabel(), element.getVersion());
+	    this.createTempElement(element.getRecordID(), element.getAppPartID(), element.getElementName(), element.getElementType(), element.getElementLabel(), element.getListOrder(), element.getVersion());
 	}
 	// TODO this.sync();
     }
     // method to add elements to temp table
-    private void createTempElement(long elementID, int appPartID, String elementName, int elementType, String elementLabel, int version) {
+    private void createTempElement(long elementID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
 	ContentValues values = new ContentValues();
 	values.put(ElementDatabaseHelper.COLUMN_ID, elementID);
 	values.put(ElementDatabaseHelper.COLUMN_APP_PART_ID, appPartID);
 	values.put(ElementDatabaseHelper.COLUMN_ELEMENT_NAME, elementName);
 	values.put(ElementDatabaseHelper.COLUMN_ELEMENT_TYPE, elementType);
 	values.put(ElementDatabaseHelper.COLUMN_ELEMENT_LABEL, elementLabel);
+	values.put(ElementDatabaseHelper.COLUMN_LIST_ORDER, listOrder);
 	values.put(ElementDatabaseHelper.COLUMN_VERSION, version);
 	db.insert(ElementDatabaseHelper.TEMP_TABLE_NAME, null, values);
     }
@@ -166,11 +171,37 @@ public class ElementDataAdapter {
 		"WHERE " + ElementDatabaseHelper.COLUMN_ID + " NOT IN (SELECT " + ElementDatabaseHelper.COLUMN_ID + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + ");";
 	db.execSQL(sql);
 	
-	// TODO update recrods that exist in both tables
+	// update records that exist in both tables
+	sql = "UPDATE " + ElementDatabaseHelper.TABLE_NAME + " " +
+	      "SET " + ElementDatabaseHelper.COLUMN_APP_PART_ID + " = (SELECT t." + ElementDatabaseHelper.COLUMN_APP_PART_ID + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " +
+		"WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
+	      "SET " + ElementDatabaseHelper.COLUMN_ELEMENT_NAME + " = (SELECT t." + ElementDatabaseHelper.COLUMN_ELEMENT_NAME + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+	        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
+	      "SET " + ElementDatabaseHelper.COLUMN_ELEMENT_TYPE + " = (SELECT t." + ElementDatabaseHelper.COLUMN_ELEMENT_TYPE + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+	        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
+	      "SET " + ElementDatabaseHelper.COLUMN_ELEMENT_LABEL + " = (SELECT t." + ElementDatabaseHelper.COLUMN_ELEMENT_LABEL + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+	        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
+		      "SET " + ElementDatabaseHelper.COLUMN_LIST_ORDER + " = (SELECT t." + ElementDatabaseHelper.COLUMN_LIST_ORDER + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+		        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
+	      "SET " + ElementDatabaseHelper.COLUMN_VERSION + " = (SELECT t." + ElementDatabaseHelper.COLUMN_VERSION + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+	        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + ");";
+	db.execSQL(sql);
 	
-	// TODO insert records that do not exist in elements table
-//	sql = "INSERT INTO " + ElementDatabaseHelper.TABLE_NAME + " " +
-//	      "SELECT "
+	// insert records that do not exist in elements table
+	sql = "INSERT INTO " + ElementDatabaseHelper.TABLE_NAME + " " +
+	      "SELECT " + 
+	      ElementDatabaseHelper.COLUMN_ID + ", " + 
+	      ElementDatabaseHelper.COLUMN_APP_PART_ID + ", " + 
+	      ElementDatabaseHelper.COLUMN_ELEMENT_NAME + ", " + 
+	      ElementDatabaseHelper.COLUMN_ELEMENT_TYPE + ", " +
+	      ElementDatabaseHelper.COLUMN_ELEMENT_LABEL + ", " +
+	      ElementDatabaseHelper.COLUMN_LIST_ORDER + ", " +
+	      ElementDatabaseHelper.COLUMN_VERSION + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	      "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " NOT IN " + 
+	      "(SELECT " + ElementDatabaseHelper.COLUMN_ID + " FROM " + ElementDatabaseHelper.TABLE_NAME + ");";
+	db.execSQL(sql);
+	
+	Log.i(ElementDataAdapter.class.getName(), "Elements table successfully synced.");
 	
     }
 }

@@ -6,13 +6,13 @@ import java.util.List;
 import android.content.Context;
 import android.util.Log;
 
+//class to handle the work of binding the helper objects for the AppParts
 public class AppPartUtils {
     
- // define class variables
-    int applicationID;
-    String applicationName;
-    Context context;
-    String baseUri = "";
+    // define class variables
+    private int applicationID;
+    private Context context;
+    private String baseUri = "";
 
     // define local data sources
     private AppPartDataAdapter appPartDataAdapter;
@@ -50,8 +50,12 @@ public class AppPartUtils {
 
 	while (iterator.hasNext()) {
 	    AppPart appPart = (AppPart)iterator.next();
-	    Log.i("listAppParts", "ID: " + appPart.getRecordID() + " " + appPart.getAppPartName() + " " + appPart.getVersion());
+	    Log.i("listAppParts", appPart.toString());
 	}
+    }
+    
+    public List<AppPart> getAppParts() {
+	return this.appPartDataAdapter.getAllAppParts();
     }
     
 }

@@ -19,6 +19,7 @@ public class ElementDatabaseHelper extends SQLiteOpenHelper {
   	public static final String COLUMN_ELEMENT_NAME = "ElementName";
   	public static final String COLUMN_ELEMENT_TYPE = "ElementType";
   	public static final String COLUMN_ELEMENT_LABEL = "ElementLabel";
+  	public static final String COLUMN_LIST_ORDER = "ListOrder";
   	public static final String COLUMN_VERSION = "Version";
   	
   	// command to create the table
@@ -29,6 +30,7 @@ public class ElementDatabaseHelper extends SQLiteOpenHelper {
   		COLUMN_ELEMENT_NAME + " text, " +
   		COLUMN_ELEMENT_TYPE + " integer, " +
   		COLUMN_ELEMENT_LABEL + " text, " +
+  		COLUMN_LIST_ORDER + " integer, " +
   		COLUMN_VERSION + " integer);";
   	public static final String TEMP_TABLE_CREATE =
   		"CREATE TABLE " + TEMP_TABLE_NAME + " (" +
@@ -37,6 +39,7 @@ public class ElementDatabaseHelper extends SQLiteOpenHelper {
   		COLUMN_ELEMENT_NAME + " text, " +
   		COLUMN_ELEMENT_TYPE + " integer, " +
   		COLUMN_ELEMENT_LABEL + " text, " +
+  		COLUMN_LIST_ORDER + " integer, " +
   		COLUMN_VERSION + " integer);";
   	
   	// commands to delete the tables
