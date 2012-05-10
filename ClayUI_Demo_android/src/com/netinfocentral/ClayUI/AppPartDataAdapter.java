@@ -39,6 +39,7 @@ public class AppPartDataAdapter {
     public void clearDatabase() {
     	try {
     	    int result = db.delete(AppPartDatabaseHelper.TABLE_NAME, null, null);
+    	    result = db.delete(AppPartDatabaseHelper.TEMP_TABLE_NAME, null, null);
     	}
     	catch (SQLException e) {
     	    Log.e(AppPartDatabaseHelper.class.getName(), e.getMessage());
@@ -50,7 +51,7 @@ public class AppPartDataAdapter {
     
     /** method to add an app part record to database
      **
-     ** Returns the record id of the new record
+     ** Returns the app part that was created in the database
      **/
     public AppPart createAppPart(long appPartID, String appPartName, int version) {
 	ContentValues values = new ContentValues();
@@ -69,7 +70,7 @@ public class AppPartDataAdapter {
     
     /** method to update an existing app part
      * 
-     * Returns the record id of the current updated record 
+     * Returns the app part object that was updated
      *      
      **/
     public AppPart updateAppPart(long appPartID, String appPartName, int version) {

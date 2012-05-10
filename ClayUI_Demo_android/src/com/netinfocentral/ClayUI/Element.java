@@ -1,7 +1,7 @@
 package com.netinfocentral.ClayUI;
 
 public class Element {
- // define instance variables
+    // define instance variables
     private long recordID;
     private int appPartID;
     private String elementName;
@@ -10,7 +10,7 @@ public class Element {
     private int listOrder;
     private int version;
            
-    // main constructor
+    // default constructor
     public Element(long recordID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
 	this.recordID = recordID;
 	this.appPartID = appPartID;
@@ -72,7 +72,7 @@ public class Element {
 
     @Override
     public String toString() {
-	return "AppPart [recordID="+ this.recordID + ", appPartID=" + this.appPartID + ", elementName=" + this.elementName +
+	return "Element [recordID="+ this.recordID + ", appPartID=" + this.appPartID + ", elementName=" + this.elementName +
 		 ", elementType=" + this.elementType + ", elementLabel=" + this.elementLabel + ", listOrder=" + this.listOrder + ", version="+ this.version + "]";
     }
 }

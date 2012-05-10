@@ -13,7 +13,7 @@ import android.sax.ElementListener;
 import android.util.Log;
 
 public class ElementDataAdapter {
- // define class variables
+    // define class variables
     private SQLiteDatabase db;
     private ElementDatabaseHelper dbHelper;
     private String[] columns = { ElementDatabaseHelper.COLUMN_ID,
@@ -43,6 +43,7 @@ public class ElementDataAdapter {
     public void clearDatabase() {
 	try {
 	    int result = db.delete(ElementDatabaseHelper.TABLE_NAME, null, null);
+	    result = db.delete(ElementDatabaseHelper.TEMP_TABLE_NAME, null, null);
 	}
 	catch (SQLException e) {
 	    Log.e(ElementDatabaseHelper.class.getName(), e.getMessage());
@@ -54,7 +55,7 @@ public class ElementDataAdapter {
     
     /** method to add an element record to database
      **
-     ** Returns the record id of the new record
+     ** Returns the element created in database
      **/
     public Element createElement(long elementID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
 	ContentValues values = new ContentValues();
@@ -77,7 +78,7 @@ public class ElementDataAdapter {
     
     /** method to update an existing element
      * 
-     * @return record id of the current updated record
+     * @return element object that was updated
      */
     public Element updateElement(long elementID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
 	ContentValues values = new ContentValues();
@@ -144,7 +145,7 @@ public class ElementDataAdapter {
 	    Element element = (Element)iterator.next();
 	    this.createTempElement(element.getRecordID(), element.getAppPartID(), element.getElementName(), element.getElementType(), element.getElementLabel(), element.getListOrder(), element.getVersion());
 	}
-	// TODO this.sync();
+	this.sync();
     }
     // method to add elements to temp table
     private void createTempElement(long elementID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
@@ -201,7 +202,6 @@ public class ElementDataAdapter {
 	      "(SELECT " + ElementDatabaseHelper.COLUMN_ID + " FROM " + ElementDatabaseHelper.TABLE_NAME + ");";
 	db.execSQL(sql);
 	
-	Log.i(ElementDataAdapter.class.getName(), "Elements table successfully synced.");
-	
+	Log.i(ElementDataAdapter.class.getName(), "Elements table successfully synced.");	
     }
 }
