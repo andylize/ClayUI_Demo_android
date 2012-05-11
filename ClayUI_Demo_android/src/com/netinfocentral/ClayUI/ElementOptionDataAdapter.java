@@ -1,6 +1,7 @@
 package com.netinfocentral.ClayUI;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -131,9 +132,88 @@ public class ElementOptionDataAdapter {
 	return option;
     }
     
-    /** TODO **/
-    
     /** Methods to handle syncing TEMP tables with actual elements tables
      * 
      */
+    /**
+     * method to load temp table from array from web service
+     */
+    public void syncWithTempTable(List<ElementOption> elementOption) {
+	// clear temp table
+	this.deleteTempElementOptions();
+	
+	// create iterator for element options
+	Iterator<ElementOption> iterator = elementOption.iterator();
+	
+	// loop through iterator and add element options to temp table
+	while (iterator.hasNext()) {
+	    ElementOption option = (ElementOption)iterator.next();
+	    this.createElementOption(option.getRecordID(), option.getAppPartID(), option.getElementID(), option.getValue(), option.getDescription(), option.getVersion());
+	}
+	// sync with tables
+	this.sync();
+    }
+    
+    /**
+     * method to add element options to temp table
+     * 
+     */
+   private void createTempElementOption(long optionID, int appPartID, int elementID, String value, String description, int version) {
+       ContentValues values = new ContentValues();
+       values.put(ElementOptionDatabaseHelper.COLUMN_ID, optionID);
+       values.put(ElementOptionDatabaseHelper.COLUMN_APP_PART_ID, appPartID);
+       values.put(ElementOptionDatabaseHelper.COLUMN_ELEMENT_ID, elementID);
+       values.put(ElementOptionDatabaseHelper.COLUMN_VALUE, value);
+       values.put(ElementOptionDatabaseHelper.COLUMN_DESCRIPTION, description);
+       values.put(ElementOptionDatabaseHelper.COLUMN_VERSION, version);
+       db.insert(ElementOptionDatabaseHelper.TEMP_TABLE_NAME, null, values);
+   }
+   
+   /** 
+    * method to delete all element options from temp table
+    */
+   private void deleteTempElementOptions() {
+       db.delete(ElementOptionDatabaseHelper.TEMP_TABLE_NAME, null, null);
+   }
+   
+   /** 
+    * method to sync temp tables with element options table
+    */
+   private void sync() {
+       // delete records in element options table which are not in temp table
+       String sql = 
+	       "DELETE FROM " + ElementOptionDatabaseHelper.TABLE_NAME + " " +
+	       "WHERE " + ElementOptionDatabaseHelper.COLUMN_ID + " NOT IN (SELECT "+ ElementOptionDatabaseHelper.COLUMN_ID + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + ");";
+       db.execSQL(sql);
+       
+       // update records that exist in both tables
+       sql = "UPDATE " + ElementOptionDatabaseHelper.TABLE_NAME + " " + 
+	     "SET " + ElementOptionDatabaseHelper.COLUMN_APP_PART_ID + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_APP_PART_ID + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + "), " +
+	     "SET " + ElementOptionDatabaseHelper.COLUMN_ELEMENT_ID + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_ELEMENT_ID + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + "), " +
+	     "SET " + ElementOptionDatabaseHelper.COLUMN_VALUE + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_VALUE + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + "), " +
+	     "SET " + ElementOptionDatabaseHelper.COLUMN_DESCRIPTION + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_DESCRIPTION + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + "), " +
+	     "SET " + ElementOptionDatabaseHelper.COLUMN_VERSION + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_VERSION + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + ");";	      
+       db.execSQL(sql);
+       
+       // insert records that do not exist in element options table
+       sql = "INSERT INTO " + ElementOptionDatabaseHelper.TABLE_NAME + " " +
+	     "SELECT " +
+	     ElementOptionDatabaseHelper.COLUMN_ID + ", " +
+	     ElementOptionDatabaseHelper.COLUMN_APP_PART_ID + ", " +
+	     ElementOptionDatabaseHelper.COLUMN_ELEMENT_ID + ", " +
+	     ElementOptionDatabaseHelper.COLUMN_VALUE + ", " +
+	     ElementOptionDatabaseHelper.COLUMN_DESCRIPTION + ", " +
+	     ElementOptionDatabaseHelper.COLUMN_VERSION + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " NOT IN " +
+	     "(SELECT " + ElementOptionDatabaseHelper.COLUMN_ID + " FROM " + ElementOptionDatabaseHelper.TABLE_NAME + ");";
+       db.execSQL(sql);
+       
+       Log.i(ElementOptionDataAdapter.class.getName(), "ElementOptions table successfully synced.");
+	     
+   }
 }
