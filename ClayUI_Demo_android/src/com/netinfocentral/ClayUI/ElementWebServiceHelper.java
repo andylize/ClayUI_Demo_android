@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class ElementWebServiceHelper extends ClayUIWebServiceHelper {
     
-    // define class level variables
+    // define member variables
     private static final String SERVICE_URI = "services/GetElements.php?AppID=";
     
     // default constructor

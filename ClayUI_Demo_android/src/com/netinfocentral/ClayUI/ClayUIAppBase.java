@@ -22,6 +22,7 @@ public class ClayUIAppBase {
     //private AppPartDataAdapter appPartDataAdapter;
     private AppPartUtils appPartUtils;
     private ElementUtils elementUtils;
+    private ElementOptionUtils elementOptionUtils;
 
     // define local web service helpers
     //private AppPartWebServiceHelper appPartWebServiceHelper;
@@ -41,12 +42,11 @@ public class ClayUIAppBase {
 	// instantiate data utils
 	appPartUtils = new AppPartUtils(this.applicationID, this.context, this.baseUri);
 	elementUtils = new ElementUtils(this.applicationID, this.context, this.baseUri);
-
-	// open connections
-	//appPartDataAdapter.open();
+	elementOptionUtils = new ElementOptionUtils(this.applicationID, this.context, this.baseUri);
 
 	// load appPart data
 	this.syncLayoutStructure();
+	
     }
 
     // method to sync ClayUI structure
@@ -55,6 +55,8 @@ public class ClayUIAppBase {
 	appPartUtils.listAppParts();
 	elementUtils.sync();
 	elementUtils.listElements();
+	elementOptionUtils.sync();
+	elementOptionUtils.listElementOptions();
     }
     
     // method to poen database connection
@@ -83,6 +85,10 @@ public class ClayUIAppBase {
     //method to return list of AppParts
     public List<AppPart> getAllAppParts() {
 	return this.appPartUtils.getAppParts();
+    }
+    // method to return an AppPart
+    public AppPart getAppPart(long appPartID) {
+	return this.appPartUtils.getAppPart(appPartID);
     }
     // method to return list of Elements
     public List<Element> getAllElements() {

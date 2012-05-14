@@ -71,7 +71,11 @@ public class ElementOptionDataAdapter {
 	Cursor cursor = db.query(ElementOptionDatabaseHelper.TABLE_NAME, columns, ElementOptionDatabaseHelper.COLUMN_ID + " = " + insertID, null, null, null, null);
 	cursor.moveToFirst();
 	
-	return cursorToElementOption(cursor);
+	ElementOption option = cursorToElementOption(cursor);
+	
+	cursor.close();
+	
+	return option;
     }
     
     /** method to update an existing element option
@@ -92,7 +96,11 @@ public class ElementOptionDataAdapter {
 	Cursor cursor = db.query(ElementOptionDatabaseHelper.TABLE_NAME, columns, ElementOptionDatabaseHelper.COLUMN_ID + " = " + updateID, null, null, null, null);
 	cursor.moveToFirst();
 	
-	return cursorToElementOption(cursor);
+	ElementOption option = cursorToElementOption(cursor);
+	
+	cursor.close();
+	
+	return option;
     }
     
     /** method to delete an existing element option
@@ -190,14 +198,16 @@ public class ElementOptionDataAdapter {
        sql = "UPDATE " + ElementOptionDatabaseHelper.TABLE_NAME + " " + 
 	     "SET " + ElementOptionDatabaseHelper.COLUMN_APP_PART_ID + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_APP_PART_ID + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
 	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + "), " +
-	     "SET " + ElementOptionDatabaseHelper.COLUMN_ELEMENT_ID + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_ELEMENT_ID + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     ElementOptionDatabaseHelper.COLUMN_ELEMENT_ID + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_ELEMENT_ID + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
 	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + "), " +
-	     "SET " + ElementOptionDatabaseHelper.COLUMN_VALUE + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_VALUE + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     ElementOptionDatabaseHelper.COLUMN_VALUE + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_VALUE + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
 	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + "), " +
-	     "SET " + ElementOptionDatabaseHelper.COLUMN_DESCRIPTION + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_DESCRIPTION + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     ElementOptionDatabaseHelper.COLUMN_DESCRIPTION + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_DESCRIPTION + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
 	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + "), " +
-	     "SET " + ElementOptionDatabaseHelper.COLUMN_VERSION + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_VERSION + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
-	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + ");";	      
+	     ElementOptionDatabaseHelper.COLUMN_VERSION + " = (SELECT t." + ElementOptionDatabaseHelper.COLUMN_VERSION + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     	"WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + ") " +
+	     "WHERE EXISTS (SELECT T." + ElementOptionDatabaseHelper.COLUMN_APP_PART_ID + " FROM " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	     "WHERE t." + ElementOptionDatabaseHelper.COLUMN_ID + " = " + ElementOptionDatabaseHelper.TABLE_NAME + "." + ElementOptionDatabaseHelper.COLUMN_ID + ");";
        db.execSQL(sql);
        
        // insert records that do not exist in element options table

@@ -23,6 +23,12 @@ public class ClayUIDatabaseHelper {
     private static final String DELETE_ELEMENTS_TABLE = ElementDatabaseHelper.TABLE_DELETE;
     private static final String DELETE_ELEMENTS_TEMP_TABLE = ElementDatabaseHelper.TEMP_TABLE_DELETE;
     
+    // define ElementOption DDL strings
+    private static final String CREATE_ELEMENT_OPTIONS_TABLE = ElementOptionDatabaseHelper.TABLE_CREATE;
+    private static final String CREATE_ELEMENT_OPTIONS_TEMP_TABLE = ElementOptionDatabaseHelper.TEMP_TABLE_CREATE;
+    private static final String DELETE_ELEMENT_OPTIONS_TABLE = ElementOptionDatabaseHelper.TABLE_DELETE;
+    private static final String DELETE_ELEMENT_OPTIONS_TEMP_TABLE = ElementOptionDatabaseHelper.TEMP_TABLE_DELETE;
+    
     // define class variables
     private final Context context;
     private DatabaseHelper dbHelper;
@@ -51,16 +57,24 @@ public class ClayUIDatabaseHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 	    
-	    // create AppParts table
+	    // create AppParts tables (also creates the database if it does not exist)
 	    db.execSQL(CREATE_APP_PARTS_TABLE);
 	    Log.i(DatabaseHelper.class.getName(), "Database Created");
 	    Log.i(DatabaseHelper.class.getName(), "Table " + AppPartDatabaseHelper.TABLE_NAME + " created.");
 	    db.execSQL(CREATE_APP_PARTS_TEMP_TABLE);
 	    Log.i(DatabaseHelper.class.getName(), "Table " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " created.");
+	    
+	    // create elements tables
 	    db.execSQL(CREATE_ELEMENTS_TABLE);
 	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementDatabaseHelper.TABLE_NAME + " created.");
 	    db.execSQL(CREATE_ELEMENTS_TEMP_TABLE);
 	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementDatabaseHelper.TEMP_TABLE_NAME + " created.");
+	    
+	    // create element options tables
+	    db.execSQL(CREATE_ELEMENT_OPTIONS_TABLE);
+	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementOptionDatabaseHelper.TABLE_NAME + " created.");
+	    db.execSQL(CREATE_ELEMENT_OPTIONS_TEMP_TABLE);
+	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " created.");
 	    
 	}
 
@@ -69,15 +83,26 @@ public class ClayUIDatabaseHelper {
 	    Log.w(AppPartDatabaseHelper.class.getName(),
 		    "Upgrading database from version " + oldVersion + " to "
 		    + newVersion + ", which will destroy all old data");
-
+	    
+	    // delete app parts tables 
 	    db.execSQL(DELETE_APP_PARTS_TABLE);
 	    Log.i(DatabaseHelper.class.getName(), "Table " + AppPartDatabaseHelper.TABLE_NAME + " deleted.");
 	    db.execSQL(DELETE_APP_PARTS_TEMP_TABLE);
 	    Log.i(DatabaseHelper.class.getName(), "Table " + AppPartDatabaseHelper.TEMP_TABLE_NAME + " deleted.");
+	    
+	    // delete elements tables
 	    db.execSQL(DELETE_ELEMENTS_TABLE);
 	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementDatabaseHelper.TABLE_NAME + " deleted.");
 	    db.execSQL(DELETE_ELEMENTS_TEMP_TABLE);
 	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementDatabaseHelper.TEMP_TABLE_NAME + " deleted.");
+	    
+	    // delete element options tables
+	    db.execSQL(DELETE_ELEMENT_OPTIONS_TABLE);
+	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementOptionDatabaseHelper.TABLE_NAME + " deleted.");
+	    db.execSQL(DELETE_ELEMENT_OPTIONS_TEMP_TABLE);
+	    Log.i(DatabaseHelper.class.getName(), "Table " + ElementOptionDatabaseHelper.TEMP_TABLE_NAME + " deleted.");	    
+	    
+	    // recreate tables
 	    onCreate(db);	    
 	}	
     }

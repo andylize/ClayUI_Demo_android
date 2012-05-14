@@ -30,7 +30,7 @@ public class AppPartUtils {
 	appPartDataAdapter = new AppPartDataAdapter(this.context);
 	
 	// instantiate web service helper
-	appPartWebServiceHelper = new AppPartWebServiceHelper(this.applicationID, this.baseUri);
+	appPartWebServiceHelper = new AppPartWebServiceHelper(this.applicationID, this.baseUri, this.context);
 
 	// open connections
 	appPartDataAdapter.open();	
@@ -56,6 +56,10 @@ public class AppPartUtils {
     
     public List<AppPart> getAppParts() {
 	return this.appPartDataAdapter.getAllAppParts();
+    }
+    
+    public AppPart getAppPart(long appPartID) {
+	return this.appPartDataAdapter.getAppPart(appPartID);
     }
     
 }

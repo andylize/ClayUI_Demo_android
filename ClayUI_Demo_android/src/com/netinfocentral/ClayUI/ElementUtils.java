@@ -9,7 +9,7 @@ import android.util.Log;
 // class to handle the work of binding the helper objects for the Elements
 public class ElementUtils {
     
-    // define class variables
+    //define member variables
     private int applicationID;
     private Context context;
     private String baseUri = "";

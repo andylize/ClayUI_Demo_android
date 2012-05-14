@@ -19,9 +19,11 @@ public class AppPartDataAdapter {
     private String[] columns = { AppPartDatabaseHelper.COLUMN_ID,
 	    AppPartDatabaseHelper.COLUMN_APP_PART_NAME,
 	    AppPartDatabaseHelper.COLUMN_VERSION};
+    private Context context;
     
     //default constructor
     public AppPartDataAdapter(Context context) { 
+	this.context = context;
     	dbHelper = new ClayUIDatabaseHelper(context);
     }
     
@@ -63,8 +65,12 @@ public class AppPartDataAdapter {
 	// query the database to get inserted record and return to calling method
 	Cursor cursor = db.query(AppPartDatabaseHelper.TABLE_NAME, columns, AppPartDatabaseHelper.COLUMN_ID + " = " + insertID, null, null, null, null);
 	cursor.moveToFirst();
-
-	return cursorToAppPart(cursor);
+	
+	AppPart appPart = cursorToAppPart(cursor);
+	
+	cursor.close();
+	
+	return appPart;
 
     }
     
@@ -83,8 +89,12 @@ public class AppPartDataAdapter {
 	// query the database to get inserted record and return to calling method
 	Cursor cursor = db.query(AppPartDatabaseHelper.TABLE_NAME, columns, AppPartDatabaseHelper.COLUMN_ID + " = " + updateID, null, null, null, null);
 	cursor.moveToFirst();
-
-	return cursorToAppPart(cursor);
+	
+	AppPart appPart = cursorToAppPart(cursor);
+	
+	cursor.close();
+	
+	return appPart;
     }
     
     /** method to delete an existing app part
@@ -113,6 +123,20 @@ public class AppPartDataAdapter {
 	//close cursor
 	cursor.close();
 	return appParts;
+    }
+    
+    // method to return an app part object
+    public AppPart getAppPart(long appPartID) {
+	Cursor cursor = db.query(AppPartDatabaseHelper.TABLE_NAME, columns, AppPartDatabaseHelper.COLUMN_ID + " = " + appPartID, null, null, null, null);
+	
+	cursor.moveToFirst();
+	
+	AppPart appPart = cursorToAppPart(cursor);
+	
+	cursor.close();
+	
+	return appPart;
+	
     }
     
     // method to convert a record to a AppPart object

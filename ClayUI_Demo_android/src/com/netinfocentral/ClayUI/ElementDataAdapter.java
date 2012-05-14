@@ -72,7 +72,11 @@ public class ElementDataAdapter {
 	Cursor cursor = db.query(ElementDatabaseHelper.TABLE_NAME, columns, ElementDatabaseHelper.COLUMN_ID + " = " + insertID, null, null, null, null);
 	cursor.moveToFirst();
 	
-	return cursorToElement(cursor);
+	Element element = cursorToElement(cursor);
+	
+	cursor.close();
+	
+	return element;
 	
     }
     
@@ -95,7 +99,9 @@ public class ElementDataAdapter {
 	Cursor cursor = db.query(ElementDatabaseHelper.TABLE_NAME, columns, ElementDatabaseHelper.COLUMN_ID + " = " + updateID, null, null, null, null);
 	cursor.moveToFirst();
 	
-	return cursorToElement(cursor);
+	Element element = cursorToElement(cursor);
+	cursor.close();
+	return element;
     }
     
     /** method to delete an existing element
@@ -106,7 +112,7 @@ public class ElementDataAdapter {
 	db.delete(ElementDatabaseHelper.TABLE_NAME, ElementDatabaseHelper.COLUMN_ID + " = " + elementID, null);
     }
     
-    // method to return a list array of AppPart objects
+    // method to return a list array of all elements
     public List<Element> getAllElements() {
 	List<Element> elements = new ArrayList<Element>();
 	Cursor cursor = db.query(ElementDatabaseHelper.TABLE_NAME, columns, null, null, null, null, null);
@@ -118,6 +124,21 @@ public class ElementDataAdapter {
 	    cursor.moveToNext();
 	}
 	//close cursor
+	cursor.close();
+	return elements;
+    }
+    
+    public List<Element> getAllElements(long appPartID) {
+	List<Element> elements = new ArrayList<Element>();
+	Cursor cursor = db.query(ElementDatabaseHelper.TABLE_NAME, columns, ElementDatabaseHelper.COLUMN_APP_PART_ID + " = " + appPartID, null, null, null, null);
+	
+	cursor.moveToFirst();
+	while (!cursor.isAfterLast()) {
+	    Element element = cursorToElement(cursor);
+	    elements.add(element);
+	    cursor.moveToNext();
+	}
+	// close cursor
 	cursor.close();
 	return elements;
     }
@@ -176,16 +197,18 @@ public class ElementDataAdapter {
 	sql = "UPDATE " + ElementDatabaseHelper.TABLE_NAME + " " +
 	      "SET " + ElementDatabaseHelper.COLUMN_APP_PART_ID + " = (SELECT t." + ElementDatabaseHelper.COLUMN_APP_PART_ID + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " +
 		"WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
-	      "SET " + ElementDatabaseHelper.COLUMN_ELEMENT_NAME + " = (SELECT t." + ElementDatabaseHelper.COLUMN_ELEMENT_NAME + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+	      ElementDatabaseHelper.COLUMN_ELEMENT_NAME + " = (SELECT t." + ElementDatabaseHelper.COLUMN_ELEMENT_NAME + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
 	        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
-	      "SET " + ElementDatabaseHelper.COLUMN_ELEMENT_TYPE + " = (SELECT t." + ElementDatabaseHelper.COLUMN_ELEMENT_TYPE + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+	      ElementDatabaseHelper.COLUMN_ELEMENT_TYPE + " = (SELECT t." + ElementDatabaseHelper.COLUMN_ELEMENT_TYPE + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
 	        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
-	      "SET " + ElementDatabaseHelper.COLUMN_ELEMENT_LABEL + " = (SELECT t." + ElementDatabaseHelper.COLUMN_ELEMENT_LABEL + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+	      ElementDatabaseHelper.COLUMN_ELEMENT_LABEL + " = (SELECT t." + ElementDatabaseHelper.COLUMN_ELEMENT_LABEL + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
 	        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
-		      "SET " + ElementDatabaseHelper.COLUMN_LIST_ORDER + " = (SELECT t." + ElementDatabaseHelper.COLUMN_LIST_ORDER + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
-		        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
-	      "SET " + ElementDatabaseHelper.COLUMN_VERSION + " = (SELECT t." + ElementDatabaseHelper.COLUMN_VERSION + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
-	        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + ");";
+	      ElementDatabaseHelper.COLUMN_LIST_ORDER + " = (SELECT t." + ElementDatabaseHelper.COLUMN_LIST_ORDER + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+		"WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + "), " +
+	      ElementDatabaseHelper.COLUMN_VERSION + " = (SELECT t." + ElementDatabaseHelper.COLUMN_VERSION + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " + 
+	        "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + ") " +
+	      "WHERE EXISTS (SELECT t." + ElementDatabaseHelper.COLUMN_APP_PART_ID + " FROM " + ElementDatabaseHelper.TEMP_TABLE_NAME + " t " +
+	      "WHERE t." + ElementDatabaseHelper.COLUMN_ID + " = " + ElementDatabaseHelper.TABLE_NAME + "." + ElementDatabaseHelper.COLUMN_ID + ");";
 	db.execSQL(sql);
 	
 	// insert records that do not exist in elements table

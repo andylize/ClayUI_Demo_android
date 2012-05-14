@@ -6,16 +6,19 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.util.Log;
 
 public class AppPartWebServiceHelper extends ClayUIWebServiceHelper {
 
-    // define class level variables
+    // define member variables
     private static final String SERVICE_URI = "services/GetAppParts.php?AppID=";
-
+    private Context context;
+    
     // default constructor
-    public AppPartWebServiceHelper(int applicationID, String uri) {
+    public AppPartWebServiceHelper(int applicationID, String uri, Context context) {
 	super(applicationID, uri + AppPartWebServiceHelper.SERVICE_URI);
+	this.context = context;
     }
 
     // return Arraylist of AppParts from JSON delivered by ClayUI Web Service
@@ -30,7 +33,7 @@ public class AppPartWebServiceHelper extends ClayUIWebServiceHelper {
 	    for (int i=0; i < array.length(); i++) {
 		JSONObject jObject = array.getJSONObject(i);
 		AppPart appPart = new AppPart(jObject.getLong("AppPartID"), 
-			jObject.getString("Description"),
+			jObject.getString("AppPartName"),
 			jObject.getInt("Version"));
 
 		// add to arraylist
