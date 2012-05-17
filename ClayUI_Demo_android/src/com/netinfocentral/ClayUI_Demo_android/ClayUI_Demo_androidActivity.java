@@ -7,24 +7,30 @@ import com.netinfocentral.ClayUI.AppPart;
 import com.netinfocentral.ClayUI.ClayUIAppBase;
 import android.app.Activity;
 import android.app.ListActivity;
+import android.app.TabActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 public class ClayUI_Demo_androidActivity extends Activity {
     
     // define local variables
     ClayUIAppBase appBase;
     AppPart contactsAppPart;
-    LinearLayout contactsLayout;   
+    AppPart productsAppPart;
+    LinearLayout contactsLayout;
+    LinearLayout productsLayout;   
     
     
     static String BASE_URI_LOCAL = "http://192.168.102.80/ClayUI/";
@@ -38,23 +44,24 @@ public class ClayUI_Demo_androidActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        
         // instantiate layouts
-        //contactsLayout = (LinearLayout) findViewById(R.id.contactsLayout);
         contactsLayout = (LinearLayout) findViewById(R.id.contactsLayout);
+        productsLayout = (LinearLayout) findViewById(R.id.productsLayout);
         
         // instantiate ClayUI AppBase
         appBase = new ClayUIAppBase(1, getApplicationContext(), BASE_URI_LOCAL);
         
         // instantiate app parts
         contactsAppPart = appBase.getAppPart(1);
+        productsAppPart = appBase.getAppPart(2);
         
         // fetch app part elements
         contactsAppPart.fetchElements(this);
         contactsAppPart.refreshLayout(contactsLayout, this);
-                
+        productsAppPart.fetchElements(this);
+        productsAppPart.refreshLayout(productsLayout, this);
         
-        // set our content view
-        //setContentView(contactsLayout);
         
     }
         
@@ -97,6 +104,11 @@ public class ClayUI_Demo_androidActivity extends Activity {
     private void syncSchema() {
 	// sync with web service
 	appBase.syncLayoutStructure();
+	contactsAppPart.fetchElements(this);
+        contactsAppPart.refreshLayout(contactsLayout, this);
+        productsAppPart.fetchElements(this);
+        productsAppPart.refreshLayout(productsLayout, this);
+        
 	//List<AppPart> appParts = appBase.getAllAppParts();
 	//ArrayAdapter<AppPart> adapter = (ArrayAdapter<AppPart>) getListAdapter();
         //adapter.clear();

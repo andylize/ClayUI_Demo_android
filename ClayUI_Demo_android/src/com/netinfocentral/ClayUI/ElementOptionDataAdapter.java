@@ -35,7 +35,7 @@ public class ElementOptionDataAdapter {
     }
     
     // method to close the database
-    public void cloase() {
+    public void close() {
 	dbHelper.close();
     }
     
@@ -128,7 +128,28 @@ public class ElementOptionDataAdapter {
 	//close cursor
 	cursor.close();
 	return elementOptions;
-    }  
+    } 
+    
+    /** Method to return a list array of element options for a specific element
+     * 
+     * @param elementOptionID = ID of element to return options for
+     * 
+     * @return List Array of ElementOption objects
+     */
+    public List<ElementOption> getAllElementOptions(long elementOptionID) {
+	List<ElementOption> elementOptions = new ArrayList<ElementOption>();
+	Cursor cursor = db.query(ElementOptionDatabaseHelper.TABLE_NAME, columns, ElementOptionDatabaseHelper.COLUMN_ELEMENT_ID + " = " + elementOptionID, null, null, null, null);
+	
+	cursor.moveToFirst();
+	while (!cursor.isAfterLast()) {
+	    ElementOption option = cursorToElementOption(cursor);
+	    elementOptions.add(option);
+	    cursor.moveToNext();
+	}
+	//close cursor
+	cursor.close();
+	return elementOptions;
+    }
     
     
     /** method to return an element option object based on a cursor
@@ -156,7 +177,7 @@ public class ElementOptionDataAdapter {
 	// loop through iterator and add element options to temp table
 	while (iterator.hasNext()) {
 	    ElementOption option = (ElementOption)iterator.next();
-	    this.createElementOption(option.getRecordID(), option.getAppPartID(), option.getElementID(), option.getValue(), option.getDescription(), option.getVersion());
+	    this.createTempElementOption(option.getElementOptionID(), option.getAppPartID(), option.getElementID(), option.getValue(), option.getDescription(), option.getVersion());
 	}
 	// sync with tables
 	this.sync();

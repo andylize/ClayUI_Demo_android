@@ -3,7 +3,7 @@ package com.netinfocentral.ClayUI;
 // class to hold Element options if the Element is a combo box
 public class ElementOption {
     // define instance variables
-    private long recordID;
+    private long elementOptionID;
     private int appPartID;
     private int elementID;
     private String value;
@@ -12,7 +12,7 @@ public class ElementOption {
     
     // default constructor
     public ElementOption(long recordID, int appPartID, int elementID, String value, String description, int version) {
-	this.recordID = recordID;
+	this.elementOptionID = recordID;
 	this.appPartID = appPartID;
 	this.elementID = elementID;
 	this.value = value;
@@ -23,8 +23,8 @@ public class ElementOption {
     /**
      * @return the recordID
      */
-    public long getRecordID() {
-        return recordID;
+    public long getElementOptionID() {
+        return elementOptionID;
     }
 
     /**
@@ -64,7 +64,7 @@ public class ElementOption {
     
     @Override
     public String toString() {
-	return "AppPart [recordID="+ this.recordID + ", appPartID=" + this.appPartID + ", elementID=" + this.elementID + ", value=" + this.value +
+	return "AppPart [recordID="+ this.elementOptionID + ", appPartID=" + this.appPartID + ", elementID=" + this.elementID + ", value=" + this.value +
 		 ", description=" + this.description + ", version="+ this.version + "]";
     }
 }

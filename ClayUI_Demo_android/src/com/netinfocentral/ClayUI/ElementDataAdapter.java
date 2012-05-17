@@ -128,6 +128,12 @@ public class ElementDataAdapter {
 	return elements;
     }
     
+    /** Method to return all elements for an app part
+     * 
+     * @param appPartID = ID of app part to return elements for
+     * 
+     * @return List array of Element objects
+     */
     public List<Element> getAllElements(long appPartID) {
 	List<Element> elements = new ArrayList<Element>();
 	Cursor cursor = db.query(ElementDatabaseHelper.TABLE_NAME, columns, ElementDatabaseHelper.COLUMN_APP_PART_ID + " = " + appPartID, null, null, null, null);

@@ -37,7 +37,7 @@ public class ElementOptionWebServiceHelper extends ClayUIWebServiceHelper {
 
 		// add to arraylist
 		options.add(option);
-		Log.i(ElementOptionWebServiceHelper.class.getName(), "Added : " + option.getElementID());
+		Log.i(ElementOptionWebServiceHelper.class.getName(), "Added : " + option.getElementOptionID());
 	    }
 	}
 	catch (Exception e) {
