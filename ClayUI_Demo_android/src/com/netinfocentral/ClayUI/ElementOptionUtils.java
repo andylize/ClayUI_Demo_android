@@ -30,20 +30,21 @@ public class ElementOptionUtils {
 	
 	// instantiate web service helper
 	elementOptionWebServiceHelper = new ElementOptionWebServiceHelper(this.applicationID, this.baseUri);
-	
-	// open connections
-	elementOptionDataAdapter.open();
     }
     
     // method to synchornize local databases with ClayUI
     public void sync() {
 	// get element options from web -- insert into local table
+	this.elementOptionDataAdapter.open();
 	elementOptionDataAdapter.syncWithTempTable(elementOptionWebServiceHelper.getElementOptions());
+	this.elementOptionDataAdapter.close();
     }
     
     // method to list all element options in logcat
     public void listElementOptions() {
+	this.elementOptionDataAdapter.open();
 	List<ElementOption> elementOptions = elementOptionDataAdapter.getAllElementOptions();
+	this.elementOptionDataAdapter.close();
 	
 	Iterator<ElementOption> iterator = elementOptions.iterator();
 	
@@ -55,6 +56,9 @@ public class ElementOptionUtils {
     
     // method to return list array of Elements
     public List<ElementOption> getElementOptions() {
-	return this.elementOptionDataAdapter.getAllElementOptions();
+	this.elementOptionDataAdapter.open();
+	List<ElementOption> options = this.elementOptionDataAdapter.getAllElementOptions();
+	this.elementOptionDataAdapter.close();
+	return options;
     }
 }

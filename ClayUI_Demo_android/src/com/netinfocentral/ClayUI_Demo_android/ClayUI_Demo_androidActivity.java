@@ -71,6 +71,8 @@ public class ClayUI_Demo_androidActivity extends Activity {
 	
 	menu.add(Menu.NONE, 1, Menu.NONE, R.string.syncSchema);
 	menu.add(Menu.NONE, 2, Menu.NONE, R.string.syncData);
+	menu.add(Menu.NONE, 3, Menu.NONE, R.string.saveContact);
+	menu.add(Menu.NONE, 4, Menu.NONE, R.string.saveProduct);
 
 	return true;
     }
@@ -83,6 +85,10 @@ public class ClayUI_Demo_androidActivity extends Activity {
 	    break;
 	case 2: this.syncData();
 	    break;
+	case 3: this.saveContact();
+	    break;
+	case 4: this.saveProdcut();
+	    break;	
 	}
 	
 	return false;
@@ -128,5 +134,15 @@ public class ClayUI_Demo_androidActivity extends Activity {
     // method to handle sync data menu button
     private void syncData() {
 	Toast.makeText(getApplicationContext(), "Not Implemented", Toast.LENGTH_SHORT).show();
+    }
+    
+    // method to handle saving current contact data
+    private void saveContact() {
+	appBase.saveAppPartDataLocal(contactsAppPart, contactsLayout);
+    }
+    
+    // method to handle saving current product data
+    private void saveProdcut() {
+	appBase.saveAppPartDataLocal(productsAppPart, productsLayout);
     }
 }

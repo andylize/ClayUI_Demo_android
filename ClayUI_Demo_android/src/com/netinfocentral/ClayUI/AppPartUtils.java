@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.LinearLayout;
 
 //class to handle the work of binding the helper objects for the AppParts
 public class AppPartUtils {
@@ -27,25 +28,32 @@ public class AppPartUtils {
 	this.baseUri = baseUri;
 
 	// instantiate data sources
-	appPartDataAdapter = new AppPartDataAdapter(this.context);
+	appPartDataAdapter = new AppPartDataAdapter(this.context, this.applicationID, this.baseUri);
 	
 	// instantiate web service helper
 	appPartWebServiceHelper = new AppPartWebServiceHelper(this.applicationID, this.baseUri, this.context);
-
-	// open connections
-	appPartDataAdapter.open();	
+	
     }
     
     // method to synchronize local database with ClayUI 
     public void sync() {
 	// get app parts from web -- insert into temp table
+	appPartDataAdapter.open();
 	appPartDataAdapter.syncWithTempTable(appPartWebServiceHelper.getAppParts());
+	appPartDataAdapter.close();
+    }
+    
+    public void saveAppPartDataLocal(String appPartName, LinearLayout layout) {
+	appPartDataAdapter.open();
+	appPartDataAdapter.saveAppPartData(appPartName, layout);
+	appPartDataAdapter.close();
     }
     
     // method to list all appParts in logCat
     public void listAppParts() {
+	appPartDataAdapter.open();
 	List<AppPart> appParts = appPartDataAdapter.getAllAppParts();
-
+	appPartDataAdapter.close();
 	Iterator<AppPart> iterator = appParts.iterator();
 
 	while (iterator.hasNext()) {
@@ -55,11 +63,17 @@ public class AppPartUtils {
     }
     
     public List<AppPart> getAppParts() {
-	return this.appPartDataAdapter.getAllAppParts();
+	appPartDataAdapter.open();
+	List<AppPart> appParts = this.appPartDataAdapter.getAllAppParts();
+	this.appPartDataAdapter.close();
+	return appParts;
     }
     
-    public AppPart getAppPart(long appPartID) {
-	return this.appPartDataAdapter.getAppPart(appPartID);
+    public AppPart getAppPart(int appPartID) {
+	this.appPartDataAdapter.open();
+	AppPart appPart = this.appPartDataAdapter.getAppPart(appPartID);
+	this.appPartDataAdapter.close();
+	return appPart;
     }
     
 }

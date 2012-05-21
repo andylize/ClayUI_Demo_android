@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <string name="hello">Hello World, ClayUI_Demo_androidActivity!</string>
+<resources>    
     <string name="app_name">ClayUI Demo</string>
     <string name="syncButton">Sync UI</string>
     <string name="exitOption">Exit</string>
     <string name="syncSchema">Sync Schema</string>
     <string name="syncData">Sync Data</string>
-
+    <string name="saveContact">Save Contact</string>
+    <string name="saveProduct">Save Product</string>
 </resources>

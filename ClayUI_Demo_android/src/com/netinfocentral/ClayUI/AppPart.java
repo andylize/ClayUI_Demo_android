@@ -8,6 +8,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -17,16 +18,16 @@ import android.widget.TextView;
 
 public class AppPart {
     
-    // define instance variables
-    private long appPartID;
+    // define member variables
+    private int appPartID;
     private String appPartName;
     private int version;
     private List<Element> elements;
     
         
     // main constructor
-    public AppPart(long recordID, String appPartName, int version) {
-	this.appPartID = recordID;
+    public AppPart(int appPartID, String appPartName, int version) {
+	this.appPartID = appPartID;
 	this.appPartName = appPartName;
 	this.version = version;
     }
@@ -34,7 +35,7 @@ public class AppPart {
     /**
      * @return the recordID
      */
-    public long getRecordID() {
+    public int getAppPartID() {
         return appPartID;
     }
 
@@ -101,6 +102,8 @@ public class AppPart {
      */
     public void refreshLayout(LinearLayout layout, Context context) {
 	
+	int viewID = 0; // variable to hold the ID for the element on the form
+	
 	// clear existing layout items
 	layout.removeAllViews();
 	
@@ -115,23 +118,24 @@ public class AppPart {
 		switch (element.getElementType()) {
 		    case ElementType.CLAYUI_TEXTBOX:
 			layout.addView(this.createLabelUIElement(element, context));
-			layout.addView(this.createTextBoxUIElement(element, context));
+			layout.addView(this.createTextBoxUIElement(element, context, viewID));
 			break;
 		    case ElementType.CLAYUI_LABEL:
-			layout.addView(this.createLabelUIElement(element, context));
+			layout.addView(this.createLabelUIElement(element, context, viewID));
 			break;
 		    case ElementType.CLAYUI_COMBOBOX:
 			layout.addView(this.createLabelUIElement(element, context));
-			layout.addView(this.createComboBoxUIElement(element, context));
+			layout.addView(this.createComboBoxUIElement(element, context, viewID));
 			break;
 		    case ElementType.CLAYUI_RADIOBUTTON:
 			layout.addView(this.createLabelUIElement(element, context));
-			layout.addView(this.createRadioGroup(element, context));
+			layout.addView(this.createRadioGroup(element, context, viewID));
 			break;
-		    case ElementType.CLAYUI_CHECKBOX: //TODO
-			layout.addView(this.createLabelUIElement(element, context));
+		    case ElementType.CLAYUI_CHECKBOX:
+			layout.addView(this.createCheckBox(element, context, viewID));
 			break;
-		}		
+		}
+		viewID++;
 	    }
 	}
 	else {
@@ -148,7 +152,7 @@ public class AppPart {
 	this.elements = adapter.getAllElements(this.appPartID);
 	adapter.close();
     }
-    
+        
     
     @Override
     public String toString() {
@@ -160,15 +164,26 @@ public class AppPart {
      */
     
     /**
-     * Method to create a text box with a label
+     * Method to create a text box
      */
-    private EditText createTextBoxUIElement(Element element, Context context) {
+    private EditText createTextBoxUIElement(Element element, Context context, int viewID) {
 	EditText eText = new EditText(context);
+	eText.setId(viewID);
 	return eText;
     }
     
     /**
-     * Method to create a label
+     * Method to create a label with an ID
+     * 
+     */
+    private TextView createLabelUIElement(Element element, Context context, int viewID) {
+	TextView tview = new TextView(context);
+	tview.setId(viewID);
+	tview.setText(element.getElementLabel());
+	return tview;
+    }
+    /**
+     * Method to create a label without an ID
      * 
      */
     private TextView createLabelUIElement(Element element, Context context) {
@@ -181,8 +196,9 @@ public class AppPart {
      * Method to create a spinner (combo box)
      * 
      */
-    private Spinner createComboBoxUIElement(Element element, Context context) {
+    private Spinner createComboBoxUIElement(Element element, Context context, int viewID) {
 	Spinner spinner = new Spinner(context);
+	spinner.setId(viewID);
 		
 	// fetch element options
 	if (element.hasOptions() == false) {
@@ -201,8 +217,9 @@ public class AppPart {
     /**
      * Method to create a radio button group with radio buttons
      */
-    private RadioGroup createRadioGroup(Element element, Context context) {
+    private RadioGroup createRadioGroup(Element element, Context context, int viewID) {
 	RadioGroup group = new RadioGroup(context);
+	group.setId(viewID);
 	
 	group.setOrientation(RadioGroup.HORIZONTAL);
 	
@@ -214,13 +231,28 @@ public class AppPart {
 	// set iterator from element options
 	Iterator<String> iterator = element.getElementOptions().iterator();
 	
+	int rbID = 0;
+	
 	while(iterator.hasNext()) {
 	    RadioButton rb = new RadioButton(context);
-	    rb.setText((String)iterator.toString());
+	    rb.setText((String)iterator.next());
+	    rb.setId(rbID);
 	    group.addView(rb);
+	    rbID++;
 	}
 	
 	return group;
+	
+    }
+    
+    /**
+     * Method to create a checkbox 
+     */
+    private CheckBox createCheckBox(Element element, Context context, int viewID) {
+	CheckBox checkbox = new CheckBox(context);
+	checkbox.setId(viewID);
+	checkbox.setText(element.getElementLabel());
+	return checkbox;
 	
     }
 }

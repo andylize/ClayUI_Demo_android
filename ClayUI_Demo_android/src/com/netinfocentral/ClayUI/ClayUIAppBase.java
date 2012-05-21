@@ -5,9 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
+import android.text.Layout;
 import android.text.method.DateTimeKeyListener;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 
 public class ClayUIAppBase {
 
@@ -34,7 +36,7 @@ public class ClayUIAppBase {
 	this.baseUri = baseUri;
 	
 	// create database if necessary
-	dbHelper = new ClayUIDatabaseHelper(this.context);
+	dbHelper = new ClayUIDatabaseHelper(this.context, this.applicationID, this.baseUri);
 	
 	// instantiate data sources
 	//appPartDataAdapter = new AppPartDataAdapter(this.context);
@@ -87,11 +89,16 @@ public class ClayUIAppBase {
 	return this.appPartUtils.getAppParts();
     }
     // method to return an AppPart
-    public AppPart getAppPart(long appPartID) {
+    public AppPart getAppPart(int appPartID) {
 	return this.appPartUtils.getAppPart(appPartID);
     }
     // method to return list of Elements
     public List<Element> getAllElements() {
 	return this.elementUtils.getElements();
+    }
+    
+    // method to save app part data
+    public void saveAppPartDataLocal(AppPart appPart, LinearLayout layout) {
+	appPartUtils.saveAppPartDataLocal(appPart.getAppPartName(), layout);
     }
 }

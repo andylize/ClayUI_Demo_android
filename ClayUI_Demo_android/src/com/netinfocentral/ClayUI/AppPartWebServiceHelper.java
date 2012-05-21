@@ -32,7 +32,7 @@ public class AppPartWebServiceHelper extends ClayUIWebServiceHelper {
 	    // loop through array, pull JSON objects out and push the values into object
 	    for (int i=0; i < array.length(); i++) {
 		JSONObject jObject = array.getJSONObject(i);
-		AppPart appPart = new AppPart(jObject.getLong("AppPartID"), 
+		AppPart appPart = new AppPart(jObject.getInt("AppPartID"), 
 			jObject.getString("AppPartName"),
 			jObject.getInt("Version"));
 

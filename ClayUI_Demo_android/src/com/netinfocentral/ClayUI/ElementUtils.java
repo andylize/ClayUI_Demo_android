@@ -31,21 +31,21 @@ public class ElementUtils {
 	
 	// instantiate web service helper
 	elementWebServiceHelper = new ElementWebServiceHelper(this.applicationID, this.baseUri);
-	
-	// open connections
-	elementDataAdapater.open();
     }
     
     // method to synchronize local databases with ClayUI
     public void sync() {
 	// get elements from web -- insert into table
+	this.elementDataAdapater.open();
 	elementDataAdapater.syncWithTempTable(elementWebServiceHelper.getElements());
+	this.elementDataAdapater.close();
     }
     
     // method to list all elements in logCat
     public void listElements() {
+	this.elementDataAdapater.open();
 	List<Element> elements = elementDataAdapater.getAllElements();
-	
+	this.elementDataAdapater.close();
 	Iterator<Element> iterator = elements.iterator();
 	
 	while (iterator.hasNext()) {
@@ -56,6 +56,9 @@ public class ElementUtils {
     
     // method to return list array of Elements
     public List<Element> getElements() {
-	return this.elementDataAdapater.getAllElements();
+	this.elementDataAdapater.open();
+	List<Element> element = this.elementDataAdapater.getAllElements();
+	this.elementDataAdapater.close();
+	return element;
     }
 }

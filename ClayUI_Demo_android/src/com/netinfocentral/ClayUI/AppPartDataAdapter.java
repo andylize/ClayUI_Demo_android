@@ -10,6 +10,12 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 public class AppPartDataAdapter {
     
@@ -20,11 +26,20 @@ public class AppPartDataAdapter {
 	    AppPartDatabaseHelper.COLUMN_APP_PART_NAME,
 	    AppPartDatabaseHelper.COLUMN_VERSION};
     private Context context;
+    private int appID;
+    private String baseURI;
     
     //default constructor
-    public AppPartDataAdapter(Context context) { 
+    public AppPartDataAdapter(Context context, int appID, String baseURI) { 
 	this.context = context;
-    	dbHelper = new ClayUIDatabaseHelper(context);
+	this.appID = appID;
+	this.baseURI = baseURI;
+    	dbHelper = new ClayUIDatabaseHelper(this.context, this.appID, this.baseURI);
+    }
+    // alternate constructor if db is already open
+    public AppPartDataAdapter(Context context, int appID, String baseURI, SQLiteDatabase db) {
+	this(context, appID, baseURI);
+	this.db = db;
     }
     
     // method to open the database
@@ -55,7 +70,7 @@ public class AppPartDataAdapter {
      **
      ** Returns the app part that was created in the database
      **/
-    public AppPart createAppPart(long appPartID, String appPartName, int version) {
+    public AppPart createAppPart(int appPartID, String appPartName, int version) {
 	ContentValues values = new ContentValues();
 	values.put(AppPartDatabaseHelper.COLUMN_ID, appPartID);
 	values.put(AppPartDatabaseHelper.COLUMN_APP_PART_NAME, appPartName);
@@ -74,12 +89,65 @@ public class AppPartDataAdapter {
 
     }
     
+    /**
+     * method to save the app part data to its respective data table
+     * @param appPartName
+     */    
+    public void saveAppPartData(String appPartName, LinearLayout layout) {
+	// query local database to get schema
+	Cursor cursor = db.rawQuery("SELECT * FROM " + appPartName + " LIMIT 1", null);
+	String[] columns = cursor.getColumnNames();
+	cursor.close();
+	
+	List<String> appPartValues = new ArrayList<String>();
+	String test = "";
+	
+	for (int x=0; x<layout.getChildCount(); x++) {
+	    Log.i(AppPartDataAdapter.class.getName(), "View: " + layout.getChildAt(x).getId());
+	}
+	
+	//ContentValues values = new ContentValues();
+	for (int i=0; i<layout.getChildCount(); i++) {
+	    
+	    // check the widget type
+	    if (layout.getChildAt(i).getId() >= 0){
+    	   	if (layout.getChildAt(i) instanceof EditText){
+    	   	    EditText editText = (EditText) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    appPartValues.add(editText.getText().toString());
+    	   	    test = editText.getText().toString();
+    	   	}else if (layout.getChildAt(i) instanceof CheckBox) {
+    	   	    CheckBox checkbox = (CheckBox) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    if (checkbox.isChecked()) {
+    	   		appPartValues.add("1");
+    	   		test = "1";
+    	   	    }else {
+    	   		appPartValues.add("0");
+    	   		test = "0";
+    	   	    }
+    	   	}else if (layout.getChildAt(i) instanceof TextView) {
+    	   	    TextView textView = (TextView) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    appPartValues.add(textView.getText().toString());
+    	   	    test = textView.getText().toString();
+    	   	}else if (layout.getChildAt(i) instanceof Spinner) {
+    	   	    Spinner spinner = (Spinner) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    appPartValues.add(spinner.getSelectedItem().toString());
+    	   	    test = spinner.getSelectedItem().toString();
+    	   	}else if (layout.getChildAt(i) instanceof RadioGroup) {
+    	   	    RadioGroup group = (RadioGroup) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    appPartValues.add(Integer.toString(group.getCheckedRadioButtonId()));
+    	   	    test = Integer.toString(group.getCheckedRadioButtonId());
+    	   	}
+    	   	Log.i(AppPartDataAdapter.class.getName(), "Column: " + columns[i].toString() + " Value: " + test);
+	    }
+	}
+    }
+    
     /** method to update an existing app part
      * 
      * Returns the app part object that was updated
      *      
      **/
-    public AppPart updateAppPart(long appPartID, String appPartName, int version) {
+    public AppPart updateAppPart(int appPartID, String appPartName, int version) {
 	ContentValues values = new ContentValues();
 	values.put(AppPartDatabaseHelper.COLUMN_ID, appPartID);
 	values.put(AppPartDatabaseHelper.COLUMN_APP_PART_NAME, appPartName);
@@ -101,7 +169,7 @@ public class AppPartDataAdapter {
      * 
      * returns null
      */
-    public void deleteAppPart(long appPartID) {
+    public void deleteAppPart(int appPartID) {
 	db.delete(AppPartDatabaseHelper.TABLE_NAME, AppPartDatabaseHelper.COLUMN_ID + " = " + appPartID, null);
     }
     
@@ -126,7 +194,7 @@ public class AppPartDataAdapter {
     }
     
     // method to return an app part object
-    public AppPart getAppPart(long appPartID) {
+    public AppPart getAppPart(int appPartID) {
 	Cursor cursor = db.query(AppPartDatabaseHelper.TABLE_NAME, columns, AppPartDatabaseHelper.COLUMN_ID + " = " + appPartID, null, null, null, null);
 	
 	cursor.moveToFirst();
@@ -139,9 +207,21 @@ public class AppPartDataAdapter {
 	
     }
     
+    // method to return if app part has existing data table
+    public boolean dataTableExists(String appPartName) {
+	Cursor cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='" + appPartName +"'", null);
+	
+	if (cursor.getCount() < 1) {
+	    return false;
+	}
+	else {
+	    return true;
+	}
+    }
+    
     // method to convert a record to a AppPart object
     private AppPart cursorToAppPart(Cursor cursor)	{
-	AppPart appPart = new AppPart(cursor.getLong(0), cursor.getString(1), cursor.getInt(2));
+	AppPart appPart = new AppPart(cursor.getInt(0), cursor.getString(1), cursor.getInt(2));
 	return appPart;
     }
     
@@ -159,12 +239,27 @@ public class AppPartDataAdapter {
 	
 	// loop through iterator and add app parts to temp table 
 	while (iterator.hasNext()) {
-	    AppPart appPart = (AppPart)iterator.next();
-	    this.createTempAppPart(appPart.getRecordID(), appPart.getAppPartName(), appPart.getVersion());
+	    AppPart appPart = (AppPart)iterator.next();	    
+	    this.createTempAppPart(appPart.getAppPartID(), appPart.getAppPartName(), appPart.getVersion());
 	}
 	
 	this.sync();
+	
+	// loop trough iterator again and add update data tables
+	iterator = appParts.iterator();
+	
+	while (iterator.hasNext()) {
+	    AppPart appPart = (AppPart)iterator.next();
+
+	    // check if our data table exists.  If not create
+	    if (this.dataTableExists(appPart.getAppPartName()) == false) {
+		DataTableDatabaseHelper dtHelper = new DataTableDatabaseHelper(this.appID, appPart.getAppPartID(), this.baseURI, this.context);
+		db.execSQL(dtHelper.getTableCreate());
+		Log.i(AppPartDataAdapter.class.getName(), "Table " + appPart.getAppPartName() + " created.");
+	    }
+	}
     }
+    
     // method to add app parts to temp table
     private void createTempAppPart(long appPartID, String appPartName, int version) {
 	ContentValues values = new ContentValues();
