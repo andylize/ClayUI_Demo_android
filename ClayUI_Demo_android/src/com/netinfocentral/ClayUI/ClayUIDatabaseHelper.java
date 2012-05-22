@@ -26,6 +26,8 @@ public class ClayUIDatabaseHelper {
     private static final String DELETE_ELEMENTS_TABLE = ElementDatabaseHelper.TABLE_DELETE;
     private static final String DELETE_ELEMENTS_TEMP_TABLE = ElementDatabaseHelper.TEMP_TABLE_DELETE;
     
+    // define 
+    
     // define ElementOption DDL strings
     private static final String CREATE_ELEMENT_OPTIONS_TABLE = ElementOptionDatabaseHelper.TABLE_CREATE;
     private static final String CREATE_ELEMENT_OPTIONS_TEMP_TABLE = ElementOptionDatabaseHelper.TEMP_TABLE_CREATE;

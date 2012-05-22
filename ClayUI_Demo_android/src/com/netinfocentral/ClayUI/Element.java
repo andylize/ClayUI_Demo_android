@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter;
 
 public class Element {
     // define instance variables
-    private long elementID;
+    private int elementID;
     private int appPartID;
     private String elementName;
     private int elementType;
@@ -20,8 +20,8 @@ public class Element {
     private ArrayList<String> elementOptions;
            
     // default constructor
-    public Element(long recordID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
-	this.elementID = recordID;
+    public Element(int elementID, int appPartID, String elementName, int elementType, String elementLabel, int listOrder, int version) {
+	this.elementID = elementID;
 	this.appPartID = appPartID;
 	this.elementName = elementName;
 	this.elementType = elementType;
@@ -34,7 +34,7 @@ public class Element {
     /**
      * @return the recordID
      */
-    public long getRecordID() {
+    public int getElementID() {
         return elementID;
     }
     

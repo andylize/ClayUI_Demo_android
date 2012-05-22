@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.InputFilter.LengthFilter;
 import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -16,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class AppPartDataAdapter {
     
@@ -93,20 +95,13 @@ public class AppPartDataAdapter {
      * method to save the app part data to its respective data table
      * @param appPartName
      */    
-    public void saveAppPartData(String appPartName, LinearLayout layout) {
-	// query local database to get schema
-	Cursor cursor = db.rawQuery("SELECT * FROM " + appPartName + " LIMIT 1", null);
-	String[] columns = cursor.getColumnNames();
-	cursor.close();
+    public void saveAppPartData(String appPartName, LinearLayout layout, Context context) {	
+	ElementDataAdapter elementDataAdapter = new ElementDataAdapter(context);
 	
+	List<String> elementNames = new ArrayList<String>();	
 	List<String> appPartValues = new ArrayList<String>();
-	String test = "";
 	
-	for (int x=0; x<layout.getChildCount(); x++) {
-	    Log.i(AppPartDataAdapter.class.getName(), "View: " + layout.getChildAt(x).getId());
-	}
-	
-	//ContentValues values = new ContentValues();
+	// loop through layout components and get values for items with storable data
 	for (int i=0; i<layout.getChildCount(); i++) {
 	    
 	    // check the widget type
@@ -114,32 +109,59 @@ public class AppPartDataAdapter {
     	   	if (layout.getChildAt(i) instanceof EditText){
     	   	    EditText editText = (EditText) layout.findViewById(layout.getChildAt(i).getId());
     	   	    appPartValues.add(editText.getText().toString());
-    	   	    test = editText.getText().toString();
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementName());
     	   	}else if (layout.getChildAt(i) instanceof CheckBox) {
     	   	    CheckBox checkbox = (CheckBox) layout.findViewById(layout.getChildAt(i).getId());
     	   	    if (checkbox.isChecked()) {
     	   		appPartValues.add("1");
-    	   		test = "1";
     	   	    }else {
     	   		appPartValues.add("0");
-    	   		test = "0";
     	   	    }
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementName());
     	   	}else if (layout.getChildAt(i) instanceof TextView) {
     	   	    TextView textView = (TextView) layout.findViewById(layout.getChildAt(i).getId());
     	   	    appPartValues.add(textView.getText().toString());
-    	   	    test = textView.getText().toString();
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementName());
     	   	}else if (layout.getChildAt(i) instanceof Spinner) {
     	   	    Spinner spinner = (Spinner) layout.findViewById(layout.getChildAt(i).getId());
     	   	    appPartValues.add(spinner.getSelectedItem().toString());
-    	   	    test = spinner.getSelectedItem().toString();
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementName());
     	   	}else if (layout.getChildAt(i) instanceof RadioGroup) {
     	   	    RadioGroup group = (RadioGroup) layout.findViewById(layout.getChildAt(i).getId());
     	   	    appPartValues.add(Integer.toString(group.getCheckedRadioButtonId()));
-    	   	    test = Integer.toString(group.getCheckedRadioButtonId());
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementName());
     	   	}
-    	   	Log.i(AppPartDataAdapter.class.getName(), "Column: " + columns[i].toString() + " Value: " + test);
 	    }
 	}
+	
+	// iterate through list arrays to build insert query
+	ContentValues values = new ContentValues();
+	// get fields (element names) first.
+	Iterator<String> iterator = elementNames.iterator();
+	int i = 0;
+	while (iterator.hasNext()) {
+	    String columnName = (String)iterator.next();
+	    values.put(columnName, appPartValues.get(i));
+	    i++;
+	}
+	long insertID = db.insert(appPartName, null, values);
+	Log.i(AppPartDataAdapter.class.getName(), "AppPart (" + appPartName + ") record saved: " + insertID);
+	Toast.makeText(context, appPartName + " data saved.", Toast.LENGTH_SHORT).show();	
     }
     
     /** method to update an existing app part

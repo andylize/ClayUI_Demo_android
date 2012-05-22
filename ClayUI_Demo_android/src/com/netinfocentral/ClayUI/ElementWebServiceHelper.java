@@ -29,7 +29,7 @@ public class ElementWebServiceHelper extends ClayUIWebServiceHelper {
 	    // loop through array, pull JSON objects out and push the values into the Element object
 	    for (int i=0; i < array.length(); i++) {
 		JSONObject jObject = array.getJSONObject(i);
-		Element element = new Element(jObject.getLong("ElementID"),
+		Element element = new Element(jObject.getInt("ElementID"),
 			jObject.getInt("AppPartID"),
 			jObject.getString("ElementName"), 
 			jObject.getInt("ElementType"),

@@ -50,7 +50,7 @@ public class ClayUI_Demo_androidActivity extends Activity {
         productsLayout = (LinearLayout) findViewById(R.id.productsLayout);
         
         // instantiate ClayUI AppBase
-        appBase = new ClayUIAppBase(1, getApplicationContext(), BASE_URI_LOCAL);
+        appBase = new ClayUIAppBase(1, getApplicationContext(), BASE_URI_INTERNET);
         
         // instantiate app parts
         contactsAppPart = appBase.getAppPart(1);
@@ -138,11 +138,11 @@ public class ClayUI_Demo_androidActivity extends Activity {
     
     // method to handle saving current contact data
     private void saveContact() {
-	appBase.saveAppPartDataLocal(contactsAppPart, contactsLayout);
+	appBase.saveAppPartDataLocal(contactsAppPart, contactsLayout, this);
     }
     
     // method to handle saving current product data
     private void saveProdcut() {
-	appBase.saveAppPartDataLocal(productsAppPart, productsLayout);
+	appBase.saveAppPartDataLocal(productsAppPart, productsLayout, this);
     }
 }

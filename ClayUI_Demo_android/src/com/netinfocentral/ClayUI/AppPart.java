@@ -118,21 +118,21 @@ public class AppPart {
 		switch (element.getElementType()) {
 		    case ElementType.CLAYUI_TEXTBOX:
 			layout.addView(this.createLabelUIElement(element, context));
-			layout.addView(this.createTextBoxUIElement(element, context, viewID));
+			layout.addView(this.createTextBoxUIElement(element, context, element.getElementID()));
 			break;
 		    case ElementType.CLAYUI_LABEL:
-			layout.addView(this.createLabelUIElement(element, context, viewID));
+			layout.addView(this.createLabelUIElement(element, context, element.getElementID()));
 			break;
 		    case ElementType.CLAYUI_COMBOBOX:
 			layout.addView(this.createLabelUIElement(element, context));
-			layout.addView(this.createComboBoxUIElement(element, context, viewID));
+			layout.addView(this.createComboBoxUIElement(element, context, element.getElementID()));
 			break;
 		    case ElementType.CLAYUI_RADIOBUTTON:
 			layout.addView(this.createLabelUIElement(element, context));
-			layout.addView(this.createRadioGroup(element, context, viewID));
+			layout.addView(this.createRadioGroup(element, context, element.getElementID()));
 			break;
 		    case ElementType.CLAYUI_CHECKBOX:
-			layout.addView(this.createCheckBox(element, context, viewID));
+			layout.addView(this.createCheckBox(element, context, element.getElementID()));
 			break;
 		}
 		viewID++;

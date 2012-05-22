@@ -149,10 +149,23 @@ public class ElementDataAdapter {
 	return elements;
     }
     
+    /** Method to return an element from the local database
+     * 
+     * @param elementID
+     * @return an Element
+     */
+    public Element getElement(int elementID) {
+	Cursor cursor = db.query(ElementDatabaseHelper.TABLE_NAME, columns, ElementDatabaseHelper.COLUMN_ID + " = " + elementID, null, null, null, null);
+	cursor.moveToFirst();
+	Element element = cursorToElement(cursor);
+	cursor.close();
+	return element;
+    }
+    
     // method to convert a record to a AppPart object
     private Element cursorToElement(Cursor cursor)
     {
-	Element element = new Element(cursor.getLong(0), cursor.getInt(1), cursor.getString(2), cursor.getInt(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6));
+	Element element = new Element(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getInt(3), cursor.getString(4), cursor.getInt(5), cursor.getInt(6));
 	return element;
     }
     
@@ -170,7 +183,7 @@ public class ElementDataAdapter {
 	// loop through iterator and add elements to temp table
 	while (iterator.hasNext()) {
 	    Element element = (Element)iterator.next();
-	    this.createTempElement(element.getRecordID(), element.getAppPartID(), element.getElementName(), element.getElementType(), element.getElementLabel(), element.getListOrder(), element.getVersion());
+	    this.createTempElement(element.getElementID(), element.getAppPartID(), element.getElementName(), element.getElementType(), element.getElementLabel(), element.getListOrder(), element.getVersion());
 	}
 	this.sync();
     }

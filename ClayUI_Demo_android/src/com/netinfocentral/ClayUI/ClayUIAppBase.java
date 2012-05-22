@@ -98,7 +98,7 @@ public class ClayUIAppBase {
     }
     
     // method to save app part data
-    public void saveAppPartDataLocal(AppPart appPart, LinearLayout layout) {
-	appPartUtils.saveAppPartDataLocal(appPart.getAppPartName(), layout);
+    public void saveAppPartDataLocal(AppPart appPart, LinearLayout layout, Context context) {
+	appPartUtils.saveAppPartDataLocal(appPart.getAppPartName(), layout, context);
     }
 }

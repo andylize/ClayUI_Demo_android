@@ -43,9 +43,9 @@ public class AppPartUtils {
 	appPartDataAdapter.close();
     }
     
-    public void saveAppPartDataLocal(String appPartName, LinearLayout layout) {
+    public void saveAppPartDataLocal(String appPartName, LinearLayout layout, Context context) {
 	appPartDataAdapter.open();
-	appPartDataAdapter.saveAppPartData(appPartName, layout);
+	appPartDataAdapter.saveAppPartData(appPartName, layout, context);
 	appPartDataAdapter.close();
     }
     
