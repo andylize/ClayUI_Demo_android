@@ -87,7 +87,7 @@ public class ClayUI_Demo_androidActivity extends Activity {
 	    break;
 	case 3: this.saveContact();
 	    break;
-	case 4: this.saveProdcut();
+	case 4: this.saveProduct();
 	    break;	
 	}
 	
@@ -133,7 +133,8 @@ public class ClayUI_Demo_androidActivity extends Activity {
     
     // method to handle sync data menu button
     private void syncData() {
-	Toast.makeText(getApplicationContext(), "Not Implemented", Toast.LENGTH_SHORT).show();
+	appBase.saveAppPartDataWeb(contactsAppPart, this);
+	appBase.saveAppPartDataWeb(productsAppPart, this);
     }
     
     // method to handle saving current contact data
@@ -142,7 +143,7 @@ public class ClayUI_Demo_androidActivity extends Activity {
     }
     
     // method to handle saving current product data
-    private void saveProdcut() {
+    private void saveProduct() {
 	appBase.saveAppPartDataLocal(productsAppPart, productsLayout, this);
     }
 }

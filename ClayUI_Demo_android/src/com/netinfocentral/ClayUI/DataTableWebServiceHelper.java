@@ -33,8 +33,9 @@ public class DataTableWebServiceHelper extends ClayUIWebServiceHelper {
     // define default method
     public DataTableWebServiceHelper(int applicationID, int appPartID, String uri, Context context) {
 	super(applicationID, uri + DataTableWebServiceHelper.SERVICE_URI);
-	this.uri = this.uri + DataTableWebServiceHelper.SERVICE_URI_2 + appPartID;
-	this.postUri = uri + DataTableWebServiceHelper.POST_URI + this.applicationID + DataTableWebServiceHelper.SERVICE_URI_2;
+	this.appPartID = appPartID;
+	this.uri = this.uri + DataTableWebServiceHelper.SERVICE_URI_2 + this.appPartID;
+	this.postUri = uri + DataTableWebServiceHelper.POST_URI + this.applicationID + DataTableWebServiceHelper.SERVICE_URI_2 + this.appPartID;
 	
 	this.context = context;
     }
@@ -68,26 +69,27 @@ public class DataTableWebServiceHelper extends ClayUIWebServiceHelper {
     
     // generic post method
     public int sendTableData(List<String> columns, List<String> values) {
-		
-	int TIMEOUT_MILLISEC = 10000;
+	
+	// return value
+	int retval = 0;
 	
 	// create string from columns list array
-	String columnCSV = "";
+	String columnCSV = "'";
 	Iterator<String> columnIterator = columns.iterator();
 	while (columnIterator.hasNext()) {
 	    columnCSV = columnCSV + (String)columnIterator.next() + ", ";
 	}
 	// trim trailing ", "
-	columnCSV = columnCSV.substring(0, columnCSV.length() -2);
+	columnCSV = columnCSV.substring(0, columnCSV.length() -2) + "'";
 	
 	// create string from values list array
-	String valuesCSV = "";
+	String valuesCSV = "'";
 	Iterator<String> valueIterator = values.iterator();
 	while (valueIterator.hasNext()) {
-	    valuesCSV = valuesCSV + "'" + (String)valueIterator.next() + "', ";
+	    valuesCSV = valuesCSV + "''" + (String)valueIterator.next() + "'', ";
 	}
 	// trim trailing "', "
-	valuesCSV = valuesCSV.substring(0, valuesCSV.length() -3);
+	valuesCSV = valuesCSV.substring(0, valuesCSV.length() -2) + "'";
 	
 	// push values to JSON and post to web service
 	try {
@@ -120,9 +122,11 @@ public class DataTableWebServiceHelper extends ClayUIWebServiceHelper {
 		}
 		catch(IOException e) {
 		    Log.e(DataTableWebServiceHelper.class.getName(), e.getMessage());
+		    retval = 1;
 		}
 		catch(Exception e) {
 		    Log.e(DataTableWebServiceHelper.class.getName(), e.getMessage());
+		    retval = 1;
 		}
 		finally {
 		    try {
@@ -130,19 +134,23 @@ public class DataTableWebServiceHelper extends ClayUIWebServiceHelper {
 		    }
 		    catch (IOException e) {
 			Log.e(DataTableWebServiceHelper.class.getName(), e.getMessage());
+			retval = 1;
 		    }
 		    catch(Exception e) {
 			Log.e(DataTableWebServiceHelper.class.getName(), e.getMessage());
+			retval = 1;
 		    }
 		}
 		Log.i(DataTableWebServiceHelper.class.getName(), sb.toString());		
 	    }
-	    return 0;
+	    
+	    retval = 0;
 	}
 	catch (Throwable t) {
 	    Log.e(DataTableWebServiceHelper.class.getName(), t.getMessage());
-	    return 1;
+	    retval = 1;
 	}
+	return retval;
     }
 }
 

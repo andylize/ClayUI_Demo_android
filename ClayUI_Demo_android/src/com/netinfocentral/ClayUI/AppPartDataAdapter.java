@@ -1,6 +1,7 @@
 package com.netinfocentral.ClayUI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -89,79 +90,6 @@ public class AppPartDataAdapter {
 	
 	return appPart;
 
-    }
-    
-    /**
-     * method to save the app part data to its respective data table
-     * @param appPartName
-     */    
-    public void saveAppPartData(String appPartName, LinearLayout layout, Context context) {	
-	ElementDataAdapter elementDataAdapter = new ElementDataAdapter(context);
-	
-	List<String> elementNames = new ArrayList<String>();	
-	List<String> appPartValues = new ArrayList<String>();
-	
-	// loop through layout components and get values for items with storable data
-	for (int i=0; i<layout.getChildCount(); i++) {
-	    
-	    // check the widget type
-	    if (layout.getChildAt(i).getId() >= 0){
-    	   	if (layout.getChildAt(i) instanceof EditText){
-    	   	    EditText editText = (EditText) layout.findViewById(layout.getChildAt(i).getId());
-    	   	    appPartValues.add(editText.getText().toString());
-    	   	    elementDataAdapter.open();
-    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
-    	   	    elementDataAdapter.close();
-    	   	    elementNames.add(element.getElementName());
-    	   	}else if (layout.getChildAt(i) instanceof CheckBox) {
-    	   	    CheckBox checkbox = (CheckBox) layout.findViewById(layout.getChildAt(i).getId());
-    	   	    if (checkbox.isChecked()) {
-    	   		appPartValues.add("1");
-    	   	    }else {
-    	   		appPartValues.add("0");
-    	   	    }
-    	   	    elementDataAdapter.open();
-    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
-    	   	    elementDataAdapter.close();
-    	   	    elementNames.add(element.getElementName());
-    	   	}else if (layout.getChildAt(i) instanceof TextView) {
-    	   	    TextView textView = (TextView) layout.findViewById(layout.getChildAt(i).getId());
-    	   	    appPartValues.add(textView.getText().toString());
-    	   	    elementDataAdapter.open();
-    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
-    	   	    elementDataAdapter.close();
-    	   	    elementNames.add(element.getElementName());
-    	   	}else if (layout.getChildAt(i) instanceof Spinner) {
-    	   	    Spinner spinner = (Spinner) layout.findViewById(layout.getChildAt(i).getId());
-    	   	    appPartValues.add(spinner.getSelectedItem().toString());
-    	   	    elementDataAdapter.open();
-    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
-    	   	    elementDataAdapter.close();
-    	   	    elementNames.add(element.getElementName());
-    	   	}else if (layout.getChildAt(i) instanceof RadioGroup) {
-    	   	    RadioGroup group = (RadioGroup) layout.findViewById(layout.getChildAt(i).getId());
-    	   	    appPartValues.add(Integer.toString(group.getCheckedRadioButtonId()));
-    	   	    elementDataAdapter.open();
-    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
-    	   	    elementDataAdapter.close();
-    	   	    elementNames.add(element.getElementName());
-    	   	}
-	    }
-	}
-	
-	// iterate through list arrays to build insert query
-	ContentValues values = new ContentValues();
-	// get fields (element names) first.
-	Iterator<String> iterator = elementNames.iterator();
-	int i = 0;
-	while (iterator.hasNext()) {
-	    String columnName = (String)iterator.next();
-	    values.put(columnName, appPartValues.get(i));
-	    i++;
-	}
-	long insertID = db.insert(appPartName, null, values);
-	Log.i(AppPartDataAdapter.class.getName(), "AppPart (" + appPartName + ") record saved: " + insertID);
-	Toast.makeText(context, appPartName + " data saved.", Toast.LENGTH_SHORT).show();	
     }
     
     /** method to update an existing app part
@@ -325,5 +253,122 @@ public class AppPartDataAdapter {
 	
 	Log.i(AppPartDataAdapter.class.getName(), "AppParts table successfully synced.");
     }
+    
+    /**
+     * Methods for saving/retrieving app part data to/from respective data tables
+     */
+
+    
+    /**
+     * method to save the app part data to its respective data table
+     * @param appPartName
+     */    
+    public void saveAppPartData(String appPartName, LinearLayout layout, Context context) {	
+	ElementDataAdapter elementDataAdapter = new ElementDataAdapter(context);
 	
+	List<String> elementNames = new ArrayList<String>();	
+	List<String> appPartValues = new ArrayList<String>();
+	
+	// loop through layout components and get values for items with storable data
+	for (int i=0; i<layout.getChildCount(); i++) {
+	    
+	    // check the widget type
+	    if (layout.getChildAt(i).getId() >= 0){
+    	   	if (layout.getChildAt(i) instanceof EditText){
+    	   	    EditText editText = (EditText) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    appPartValues.add(editText.getText().toString());
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementID() + "." + element.getElementName());
+    	   	}else if (layout.getChildAt(i) instanceof CheckBox) {
+    	   	    CheckBox checkbox = (CheckBox) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    if (checkbox.isChecked()) {
+    	   		appPartValues.add("1");
+    	   	    }else {
+    	   		appPartValues.add("0");
+    	   	    }
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementID() + "." + element.getElementName());
+    	   	}else if (layout.getChildAt(i) instanceof TextView) {
+    	   	    TextView textView = (TextView) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    appPartValues.add(textView.getText().toString());
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementID() + "." + element.getElementName());
+    	   	}else if (layout.getChildAt(i) instanceof Spinner) {
+    	   	    Spinner spinner = (Spinner) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    appPartValues.add(spinner.getSelectedItem().toString());
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementID() + "." + element.getElementName());
+    	   	}else if (layout.getChildAt(i) instanceof RadioGroup) {
+    	   	    RadioGroup group = (RadioGroup) layout.findViewById(layout.getChildAt(i).getId());
+    	   	    appPartValues.add(Integer.toString(group.getCheckedRadioButtonId()));
+    	   	    elementDataAdapter.open();
+    	   	    Element element = elementDataAdapter.getElement(layout.getChildAt(i).getId());
+    	   	    elementDataAdapter.close();
+    	   	    elementNames.add(element.getElementID() + "." + element.getElementName());
+    	   	}
+	    }
+	}
+	
+	// iterate through list arrays to build insert query
+	ContentValues values = new ContentValues();
+	// get fields (element names) first.
+	Iterator<String> iterator = elementNames.iterator();
+	int i = 0;
+	while (iterator.hasNext()) {
+	    String columnName = (String)iterator.next();
+	    values.put("'" + columnName + "'", appPartValues.get(i));
+	    i++;
+	}
+	long insertID = db.insert(appPartName, null, values);
+	Log.i(AppPartDataAdapter.class.getName(), "AppPart (" + appPartName + ") record saved: " + insertID);
+	Toast.makeText(context, appPartName + " data saved.", Toast.LENGTH_SHORT).show();	
+    }
+    
+    /**
+     * Method to return array list of DataTableRecords
+     * @param appPartName
+     * @param context
+     * @return
+     */
+    public List<DataTableRecord> getAppPartData(String appPartName) {
+	
+	// array list to hold data table record objects
+	List<DataTableRecord> dataTableRecords = new ArrayList<DataTableRecord>();
+	
+	// query data table to get values that have not been sent up to web
+	Cursor cursor = db.query(appPartName, null, "sentToWeb = 0", null, null, null, null);
+	
+	cursor.moveToFirst();
+	
+	while (!cursor.isAfterLast()) {
+	    List<String> columns = new ArrayList<String>();
+	    List<String> values = new ArrayList<String>();
+	    
+	    // get values in record
+	    for (int i = 0; i<cursor.getColumnCount(); i++) {
+		if (cursor.getColumnName(i).equals("sentToWeb") == false && cursor.getColumnName(i).equals("_ID") == false) {
+		    columns.add(cursor.getColumnName(i));
+		    values.add(cursor.getString(i));
+		}
+	    }
+	    DataTableRecord record = new DataTableRecord(columns, values);
+	    dataTableRecords.add(record);
+	    cursor.moveToNext();
+	}
+	cursor.close();
+	return dataTableRecords;
+    }
+    
+    public void updateDataTableSentToWebStatus(String appPartName) {
+	String sql = "UPDATE " + appPartName + " SET sentToWeb = 1 WHERE sentToWeb = 0;";
+	db.execSQL(sql);
+    }
 }

@@ -10,6 +10,7 @@ import android.text.method.DateTimeKeyListener;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class ClayUIAppBase {
 
@@ -100,5 +101,27 @@ public class ClayUIAppBase {
     // method to save app part data
     public void saveAppPartDataLocal(AppPart appPart, LinearLayout layout, Context context) {
 	appPartUtils.saveAppPartDataLocal(appPart.getAppPartName(), layout, context);
+    }
+    
+    // method to save app part data to web service
+    public int saveAppPartDataWeb(AppPart appPart, Context context) {
+	int retval = 0;
+	
+	if (appPartUtils.saveAppPartDataToWeb(appPart.getAppPartID(), context) == 0) {
+	    // update current records sentToWeb status
+	    appPartUtils.updateSentToWebStatus(appPart.getAppPartID(), context);
+	}
+	else {
+	    retval = 1;
+	}
+	
+	if (retval == 1) {
+	    Toast.makeText(context, "Error sending data to web service.", Toast.LENGTH_SHORT).show();
+	}
+	else {
+	    Toast.makeText(context, "Data sent to web successfully.", Toast.LENGTH_SHORT).show();
+	}
+	
+	return retval;
     }
 }

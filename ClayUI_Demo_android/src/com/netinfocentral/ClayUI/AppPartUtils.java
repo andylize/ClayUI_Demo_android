@@ -43,9 +43,61 @@ public class AppPartUtils {
 	appPartDataAdapter.close();
     }
     
+    /**
+     * method to save the current form data to the local database
+     * @param appPartName
+     * @param layout
+     * @param context
+     */
     public void saveAppPartDataLocal(String appPartName, LinearLayout layout, Context context) {
 	appPartDataAdapter.open();
 	appPartDataAdapter.saveAppPartData(appPartName, layout, context);
+	appPartDataAdapter.close();
+    }
+    
+    /**
+     * method to save current app part data to web service
+     * @param appPartID
+     * @param context
+     */
+    public int  saveAppPartDataToWeb(int appPartID, Context context) {
+	
+	// return value
+	int retval = 0;
+	
+	// get app part object
+	AppPart appPart = this.getAppPart(appPartID);
+	
+	appPartDataAdapter.open();
+	// get list of DataTable Data (columns, values)
+	List<DataTableRecord> records = appPartDataAdapter.getAppPartData(appPart.getAppPartName());
+	appPartDataAdapter.close();
+	// loop through list and post via DataTableWebService,sendTableData(List<String> columns, List<String> values)
+	Iterator<DataTableRecord> iterator = records.iterator();
+	DataTableWebServiceHelper helper = new DataTableWebServiceHelper(this.applicationID, appPartID, this.baseUri, context);
+	try {
+	    while (iterator.hasNext()) {
+	        DataTableRecord record = (DataTableRecord)iterator.next();
+	        helper.sendTableData(record.getColumns(), record.getValues());
+	    }
+	} catch (Exception e) {
+	    Log.e(AppPartUtils.class.getName(), "Error sending data to web.");
+	    Log.e(AppPartUtils.class.getName(), e.getMessage());
+	    retval = 1;
+	}
+	return retval;
+    }
+    
+    /**
+     * method to update data table's sentToWeb status field.
+     * @param appPartID
+     * @param context
+     */
+    public void updateSentToWebStatus(int appPartID, Context context) {
+	AppPart appPart = this.getAppPart(appPartID);
+	
+	appPartDataAdapter.open();
+	appPartDataAdapter.updateDataTableSentToWebStatus(appPart.getAppPartName());
 	appPartDataAdapter.close();
     }
     

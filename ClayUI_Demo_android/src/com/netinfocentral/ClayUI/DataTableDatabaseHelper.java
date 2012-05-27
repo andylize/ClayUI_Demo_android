@@ -49,7 +49,7 @@ public class DataTableDatabaseHelper extends SQLiteOpenHelper {
 	// loop through iterator and generate create table string
 	while (iterator.hasNext()) {
 	    DataTableSchema schema = (DataTableSchema)iterator.next();
-	    this.tableCreate = this.tableCreate + schema.getColumnName() + " ";
+	    this.tableCreate = this.tableCreate + "'" + schema.getColumnName() + "' ";
 	    
 	    if (schema.getDataType().equals("int")) {
 		this.tableCreate = this.tableCreate + "integer ";
@@ -66,8 +66,8 @@ public class DataTableDatabaseHelper extends SQLiteOpenHelper {
 	    this.tableCreate = this.tableCreate + ", ";
 	}
 	
-	// trim off trailing ', '
-	this.tableCreate = this.tableCreate.substring(0, this.tableCreate.length() - 2) + ");";
+	// add column for storing web-save status
+	this.tableCreate = this.tableCreate + "sentToWeb integer default 0);";
     }
     
     /**
