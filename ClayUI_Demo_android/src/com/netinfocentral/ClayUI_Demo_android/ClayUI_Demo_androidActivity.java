@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.app.TabActivity;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -44,13 +45,18 @@ public class ClayUI_Demo_androidActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        // TODO disable strict-mode and add threading
+    	StrictMode.ThreadPolicy policy = new StrictMode.
+		ThreadPolicy.Builder().permitAll().build(); 
+		StrictMode.setThreadPolicy(policy);
+        
         
         // instantiate layouts
         contactsLayout = (LinearLayout) findViewById(R.id.contactsLayout);
         productsLayout = (LinearLayout) findViewById(R.id.productsLayout);
         
         // instantiate ClayUI AppBase
-        appBase = new ClayUIAppBase(1, getApplicationContext(), BASE_URI_INTERNET);
+        appBase = new ClayUIAppBase(1, getApplicationContext(), BASE_URI_LOCAL);
         
         // instantiate app parts
         contactsAppPart = appBase.getAppPart(1);

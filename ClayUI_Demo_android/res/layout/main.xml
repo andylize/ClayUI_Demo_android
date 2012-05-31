@@ -14,10 +14,10 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/horizonalBar"
-        android:background="#ffffff"
+        android:id="@+id/horizontalBar"
         android:layout_width="fill_parent"
-        android:layout_height="1dip" />
+        android:layout_height="1dip"
+        android:background="#ffffff" />
 
     <LinearLayout
         android:id="@+id/productsLayout"

@@ -14,12 +14,14 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.net.ParseException;
+import android.os.AsyncTask;
 import android.util.Log;
 
 public abstract class ClayUIWebServiceHelper {
     
     protected int applicationID;
     protected String uri;
+    protected String jsonResult;
     
     public ClayUIWebServiceHelper(int applicationID, String uri) {
 	this.applicationID = applicationID;
@@ -28,7 +30,10 @@ public abstract class ClayUIWebServiceHelper {
     
     // generic web service retrieval system to return JSON string
     protected String getWebServiceData(String uri) {
-
+	
+//	DownloadJSONDataTask task = new DownloadJSONDataTask();
+//	task.execute(new String [] {uri});
+//	return this.jsonResult;
 	StringBuilder builder = new StringBuilder();
 	HttpClient client = new DefaultHttpClient();
 	try {
@@ -48,18 +53,69 @@ public abstract class ClayUIWebServiceHelper {
 		}
 	    }
 	    else {
-		Log.e(ParseException.class.toString(), "Failed to download file");
+		Log.e(ClayUIWebServiceHelper.class.getName(), "Failed to download file");
 	    }
 	}
 	catch (ClientProtocolException e) {
-	    Log.e("ClientProtocolException", e.getMessage());
+	    Log.e(ClayUIWebServiceHelper.class.getName(), e.getMessage());
 	}
 	catch (IOException e) {
-	    Log.e("IOException", e.getMessage());
+	    Log.e(ClayUIWebServiceHelper.class.getName(), e.getMessage());
 	}
 	catch (Exception e) {
-	    Log.e("Exception", e.getMessage());
+	    Log.e(ClayUIWebServiceHelper.class.getName(), e.getMessage());
 	}
 	return builder.toString();		
+    }
+    
+    // class to retrieve JSON data from backtround thread
+    private class DownloadJSONDataTask extends AsyncTask<String, Void, String> {
+
+	@Override
+	protected String doInBackground(String... uris) {
+	    
+	    String jsonResponse = "";
+	    
+	    for (String uri : uris) {
+		StringBuilder builder = new StringBuilder();
+		HttpClient client = new DefaultHttpClient();
+		try {
+		    HttpGet httpGet = new HttpGet(uri);
+		    HttpResponse response = client.execute(httpGet);
+		    StatusLine statusLine = response.getStatusLine();
+		    int statusCode = statusLine.getStatusCode();
+		    
+		    if (statusCode == 200) {
+			HttpEntity entity = response.getEntity();
+			InputStream content = entity.getContent();
+			BufferedReader reader = new BufferedReader(
+				new InputStreamReader(content));
+			String line;
+			while ((line = reader.readLine()) != null) {
+			    builder.append(line);
+			}
+		    }
+		    else {
+			Log.e(ClayUIWebServiceHelper.class.getName(), "Failed to download files.");
+		    }
+		}catch (ClientProtocolException e) {
+		    Log.e(ClayUIWebServiceHelper.class.getName(), e.getMessage());
+		}
+		catch (IOException e) {
+		    Log.e(ClayUIWebServiceHelper.class.getName(), e.getMessage());
+		}
+		catch (Exception e) {
+		    Log.e(ClayUIWebServiceHelper.class.getName(), e.getMessage());
+		}
+		jsonResponse = builder.toString();
+	    }
+	    return jsonResponse;
+	}
+	
+	@Override
+	protected void onPostExecute(String result) {
+	    jsonResult = result;
+	}
+	
     }
 }

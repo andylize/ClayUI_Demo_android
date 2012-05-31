@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.text.Layout;
 import android.text.method.DateTimeKeyListener;
 import android.util.Log;
@@ -12,7 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class ClayUIAppBase {
+public class ClayUIAppBase{
 
     // define class variables
     int applicationID;
@@ -51,7 +52,7 @@ public class ClayUIAppBase {
 	this.syncLayoutStructure();
 	
     }
-
+        
     // method to sync ClayUI structure
     public void syncLayoutStructure() {
 	appPartUtils.sync();

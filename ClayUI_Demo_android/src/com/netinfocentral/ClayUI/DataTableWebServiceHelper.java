@@ -40,7 +40,7 @@ public class DataTableWebServiceHelper extends ClayUIWebServiceHelper {
 	this.context = context;
     }
     
-    // return arraylist of a data table schem form JSON delivered from ClayIO Web Service
+    // return arraylist of a data table schema form JSON delivered from ClayIO Web Service
     public List<DataTableSchema> getTableSchema() {
 	List<DataTableSchema> tableSchema = new ArrayList<DataTableSchema>();
 	
