@@ -116,25 +116,16 @@ public class ClayUI_Demo_androidActivity extends Activity {
     private void syncSchema() {
 	// sync with web service
 	appBase.syncLayoutStructure();
+	// fetch new elements from local database  
 	contactsAppPart.fetchElements(this);
-        contactsAppPart.refreshLayout(contactsLayout, this);
-        productsAppPart.fetchElements(this);
-        productsAppPart.refreshLayout(productsLayout, this);
-        
-	//List<AppPart> appParts = appBase.getAllAppParts();
-	//ArrayAdapter<AppPart> adapter = (ArrayAdapter<AppPart>) getListAdapter();
-        //adapter.clear();
-        
-        //Iterator<AppPart> iterator = appParts.iterator();
-        
-        //while (iterator.hasNext())
-        //{
-    	//adapter.add(iterator.next());
-        //}
-        
-        //adapter.notifyDataSetChanged();
-        
-        Toast.makeText(getApplicationContext(), "Layout updated", Toast.LENGTH_SHORT).show();
+	// refresh UI layout
+	contactsAppPart.refreshLayout(contactsLayout, this);
+	// fetch new elements from local database  
+	productsAppPart.fetchElements(this);
+	// refresh UI layout
+	productsAppPart.refreshLayout(productsLayout, this);
+
+	Toast.makeText(getApplicationContext(), "Layout updated", Toast.LENGTH_SHORT).show();
     }
     
     // method to handle sync data menu button
@@ -143,7 +134,7 @@ public class ClayUI_Demo_androidActivity extends Activity {
 	appBase.saveAppPartDataWeb(productsAppPart, this);
     }
     
-    // method to handle saving current contact data
+ // method to handle saving current contact data
     private void saveContact() {
 	appBase.saveAppPartDataLocal(contactsAppPart, contactsLayout, this);
     }
